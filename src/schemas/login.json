@@ -1,0 +1,9 @@
+{
+  "type": "object",
+  "properties": {
+    "Username": { "type": "string", "allowNull": false },
+    "Password": { "type": "string", "allowNull": false }
+  },
+  "required": ["Username", "Password"],
+  "additionalProperties": false
+}
