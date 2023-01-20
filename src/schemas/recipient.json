@@ -4,18 +4,15 @@
   "properties": {
     "IDCard": {
       "type": "string",
-      "allowNull": false,
       "idnumberExists": { "table": "user" }
     },
     "Name": { "type": "string" },
     "Email": {
       "type": "string",
-      "allowNull": false,
       "emailExists": { "table": "user" }
     },
     "Phone": {
       "type": "string",
-      "allowNull": false,
       "phoneExists": { "table": "user" }
     }
   },

@@ -1,8 +1,8 @@
 {
   "type": "object",
   "properties": {
-    "Username": { "type": "string", "allowNull": false },
-    "Password": { "type": "string", "allowNull": false }
+    "Username": { "type": "string", "nullable": false },
+    "Password": { "type": "string", "nullable": false }
   },
   "required": ["Username", "Password"],
   "additionalProperties": false

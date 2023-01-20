@@ -3,8 +3,9 @@ import morgan from "morgan";
 import asyncError from "express-async-errors";
 
 // import router
-import bankRouter from "./src/routes/bank.route.js";
+import genericRouter from "./src/routes/generic.route.js";
 import accountRouter from "./src/routes/account.route.js";
+import customerRouter from "./src/routes/customer.route.js";
 
 const app = express();
 
@@ -16,8 +17,9 @@ app.get("/", (req, res) => {
 });
 
 // use router
-app.use("/api/bank", bankRouter);
+app.use("/api/generic", genericRouter);
 app.use("/api/account", accountRouter);
+app.use("/api/customer", customerRouter);
 
 app.post("/", (req, res) => {
   res.status(201).json({
