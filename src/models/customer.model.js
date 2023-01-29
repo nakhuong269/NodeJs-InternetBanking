@@ -78,7 +78,9 @@ export async function findAllTransactionByAccountId(id) {
       TransactionName: "transaction_type.Name",
       BankName: "bank.Name",
       PaymentName: "payment_fee_type.Name",
-    });
+      TransactionTime: "transaction.CreatedDate",
+    })
+    .orderBy("transaction.CreatedDate", "desc");
   if (rows.length === 0) {
     return null;
   }

@@ -29,6 +29,12 @@ export async function findByPhone(phone) {
 }
 
 export async function register(userInfo) {
+  const user = {
+    IDCard: userInfo.IDCard,
+    Name: userInfo.Name,
+    Email: userInfo.Email,
+    Phone: userInfo.Phone,
+  };
   //create random password 6 character
   const password = (+new Date() * Math.random())
     .toString(36)
@@ -40,19 +46,30 @@ export async function register(userInfo) {
   const accountInfo = {
     Username: userInfo.Phone,
     Password: bcrypt.hashSync(password, 10),
+    Role: userInfo.Role,
   };
 
-  //create account for user and get id user insert
-  const accountId = await ((await db("user").insert(userInfo)) &&
-    (await db("account").insert(accountInfo)));
+  const trx = await db.transaction();
+  try {
+    //create account for user and get id user insert
+    const accountId =
+      (await trx("user").insert(user)) &&
+      (await trx("account").insert(accountInfo));
 
-  //create account payment for account
-  const accountPaymentInfo = {
-    AccountNumber: userInfo.Phone,
-    AccountID: accountId[0],
-  };
-
-  return await db("account_payment").insert(accountPaymentInfo);
+    //create account payment for account
+    const accountPaymentInfo = {
+      AccountNumber: userInfo.Phone,
+      AccountID: accountId[0],
+    };
+    const accountPaymentId = await trx("account_payment").insert(
+      accountPaymentInfo
+    );
+    await trx.commit();
+    return accountPaymentId;
+  } catch (e) {
+    await trx.rollback();
+    throw e;
+  }
 }
 
 export async function login(accountInfo) {
