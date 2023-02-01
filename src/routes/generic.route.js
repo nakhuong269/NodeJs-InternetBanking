@@ -16,4 +16,17 @@ router.get("/GetInfoUser/:accountNumber", async (req, res) => {
   });
 });
 
+router.post("/InternalTransfer", async (req, res) => {
+  const transaction = req.body;
+
+  const data = await genericModel.InternalTransfer(transaction);
+
+  if (data === null) {
+    return res.status(204).end();
+  }
+  res.status(200).json({
+    data: data,
+  });
+});
+
 export default router;

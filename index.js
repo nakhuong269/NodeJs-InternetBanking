@@ -7,6 +7,7 @@ import genericRouter from "./src/routes/generic.route.js";
 import accountRouter from "./src/routes/account.route.js";
 import customerRouter from "./src/routes/customer.route.js";
 import adminRouter from "./src/routes/admin.route.js";
+import employeeRouter from "./src/routes/employee.route.js";
 
 const app = express();
 
@@ -22,6 +23,7 @@ app.use("/api/generic", genericRouter);
 app.use("/api/account", accountRouter);
 app.use("/api/customer", customerRouter);
 app.use("/api/admin", adminRouter);
+app.use("/api/employee", employeeRouter);
 
 app.post("/", (req, res) => {
   res.status(201).json({

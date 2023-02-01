@@ -36,3 +36,39 @@ export async function deleteEmployee(id) {
     (await db("account").where("ID", id).update("IsDeleted", true))
   );
 }
+
+export async function findAllTransaction() {
+  const rows = await db("transaction")
+    .where("transactionTypeID", "=", 2)
+    .join("bank", "transaction.BankID", "=", "bank.ID")
+    .join(
+      "transaction_type",
+      "transaction.TransactionTypeID",
+      "=",
+      "transaction_type.ID"
+    )
+    .join(
+      "payment_fee_type",
+      "transaction.PaymentFeeTypeID",
+      "=",
+      "payment_fee_type.ID"
+    )
+    .select({
+      ID: "transaction.ID",
+      AccountPaymentSend: "transaction.AccountPaymentSend",
+      AccountPaymentReceive: "transaction.AccountPaymentReceive",
+      Amount: "transaction.Amount",
+      Content: "transaction.Content",
+      TransferFee: "transaction.TransferFee",
+      TransactionName: "transaction_type.Name",
+      BankName: "bank.Name",
+      PaymentName: "payment_fee_type.Name",
+      TransactionTime: "transaction.CreatedDate",
+    })
+    .orderBy("transaction.CreatedDate", "desc");
+  if (rows.length === 0) {
+    return null;
+  }
+
+  return rows;
+}

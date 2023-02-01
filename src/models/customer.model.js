@@ -1,5 +1,6 @@
 import db from "../utils/db.js";
 import moment from "moment";
+import { InternalTransfer } from "./generic.model.js";
 
 export async function findAllRecipientByAccountId(accountId) {
   const rows = await db("recipient")
@@ -102,3 +103,150 @@ export async function findAllPaymentAccountById(id) {
 }
 
 //debt remind
+
+export async function findAllDebtRemindByAccountId(id) {
+  const rows = await db("debt_remind")
+    .join(
+      "account_payment",
+      "debt_remind.AccountPaymentSend",
+      "=",
+      "account_payment.AccountNumber"
+    )
+    .join("status", "status.ID", "=", "debt_remind.StatusID")
+    .where("account_payment.AccountID", "=", id)
+    .select([
+      "debt_remind.AccountPaymentSend",
+      "debt_remind.AccountPaymentReceive",
+      "debt_remind.Amount",
+      "debt_remind.Content",
+      "status.Name",
+      "debt_remind.CreatedDate",
+    ]);
+  if (rows.length === 0) {
+    return null;
+  }
+
+  return rows;
+}
+
+export async function findAllDebtRemindByAnotherAccountSend(id) {
+  const rows = await db("debt_remind")
+    .join(
+      "account_payment",
+      "debt_remind.AccountPaymentReceive",
+      "=",
+      "account_payment.AccountNumber"
+    )
+    .join("status", "status.ID", "=", "debt_remind.StatusID")
+    .where("account_payment.AccountID", "=", id)
+    .select([
+      "debt_remind.AccountPaymentSend",
+      "debt_remind.AccountPaymentReceive",
+      "debt_remind.Amount",
+      "debt_remind.Content",
+      "status.Name",
+      "debt_remind.CreatedDate",
+    ]);
+  if (rows.length === 0) {
+    return null;
+  }
+
+  return rows;
+}
+
+export async function createDebtRemind(debt) {
+  const trx = await db.transaction();
+  try {
+    const result = await trx("debt_remind").insert(debt);
+    if (result === 0) {
+      return null;
+    }
+    await trx.commit();
+
+    return result;
+  } catch (error) {
+    await trx.rollback();
+    throw error;
+  }
+}
+
+export async function cancelDebtRemind(id) {
+  const trx = await db.transaction();
+  try {
+    const result = await trx("debt_remind")
+      .where("ID", "=", id)
+      .update({ statusID: 3, IsDeleted: true });
+    if (result === 0) {
+      return null;
+    }
+
+    // const row = await trx("debt_remind")
+    //   .where("debt_remind.ID", "=", idTransaction)
+    //   .join("status", "status.ID", "=", "debt_remind.StatusID")
+    //   .select({
+    //     ID: "debt_remind.ID",
+    //     AccountPaymentSend: "debt_remind.AccountPaymentSend",
+    //     AccountPaymentReceive: "debt_remind.AccountPaymentReceive",
+    //     Amount: "debt_remind.Amount",
+    //     Content: "debt_remind.Content",
+    //     Status: "status.Name",
+    //     CreatedDate: "debt_remind.CreatedDate",
+    //   });
+
+    // if (row[0].AccountPaymentSend === AccountNumber) {
+    //   //Send Notify
+    //   console.log("AccountPaymentSend");
+    // } else if (row[0].AccountPaymentReceive === AccountNumber) {
+    //   //Send Notify
+    //   console.log("AccountPaymentReceive");
+    // } else {
+    //   await trx.rollback();
+    //   return null;
+    // }
+    await trx.commit();
+
+    return result;
+  } catch (error) {
+    await trx.rollback();
+    throw error;
+  }
+}
+
+export async function debtPayment(id) {
+  const trx = await db.transaction();
+  try {
+    const resultUpdateDebt = await trx("debt_remind")
+      .where("ID", "=", id)
+      .update({ statusID: 2 });
+    if (resultUpdateDebt === 0) {
+      return null;
+    }
+
+    let debtPayment = await trx("debt_remind")
+      .where("ID", "=", id)
+      .select([
+        "AccountPaymentSend",
+        "AccountPaymentReceive",
+        "Amount",
+        "Content",
+      ]);
+
+    debtPayment = {
+      ...debtPayment[0],
+      TransactionTypeID: 1,
+      PaymentFeeTypeID: 1,
+      BankID: 1,
+    };
+
+    console.log(debtPayment);
+
+    const resultDebtPayment = await InternalTransfer(debtPayment);
+
+    await trx.commit();
+
+    return resultDebtPayment;
+  } catch (error) {
+    await trx.rollback();
+    throw error;
+  }
+}

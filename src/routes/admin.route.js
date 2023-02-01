@@ -59,4 +59,16 @@ router.delete("/:id", async (req, res) => {
     });
   }
 });
+
+router.get("/GetListTransaction", async (req, res) => {
+  const data = await adminModel.findAllTransaction();
+
+  if (data === null) {
+    return res.status(204).end();
+  }
+  res.status(200).json({
+    data: data,
+  });
+});
+
 export default router;

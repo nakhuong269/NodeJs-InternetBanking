@@ -13,3 +13,19 @@ export async function GetInfoUserByAccountNumber(accountNumber) {
 
   return row;
 }
+
+export async function InternalTransfer(transaction) {
+  const trx = await db.transaction();
+  try {
+    const result = await trx("transaction").insert(transaction);
+    if (result === 0) {
+      return null;
+    }
+    await trx.commit();
+
+    return result;
+  } catch (error) {
+    await trx.rollback();
+    throw error;
+  }
+}

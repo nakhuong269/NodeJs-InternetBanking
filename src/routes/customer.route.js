@@ -90,4 +90,68 @@ router.delete("/recipient/:id", async (req, res) => {
   }
 });
 
+router.get("/DebtRemind/GetListDebtRemindBySelf/:id", async (req, res) => {
+  const id = req.params.id || 0;
+
+  const data = await customerModel.findAllDebtRemindByAccountId(id);
+
+  if (data === null) {
+    return res.status(204).end();
+  }
+  res.status(200).json({
+    data: data,
+  });
+});
+
+router.get("/DebtRemind/GetListDebtRemindByAnother/:id", async (req, res) => {
+  const id = req.params.id || 0;
+
+  const data = await customerModel.findAllDebtRemindByAnotherAccountSend(id);
+
+  if (data === null) {
+    return res.status(204).end();
+  }
+  res.status(200).json({
+    data: data,
+  });
+});
+
+router.post("/DebtRemind", async (req, res) => {
+  const debt = req.body;
+  const data = await customerModel.createDebtRemind(debt);
+
+  if (data === null) {
+    return res.status(204).end();
+  }
+  res.status(200).json({
+    data: data,
+  });
+});
+
+router.delete("/DebtRemind/:id", async (req, res) => {
+  const id = req.params.id || 0;
+
+  const data = await customerModel.cancelDebtRemind(id);
+
+  if (data === null) {
+    return res.status(204).end();
+  }
+  res.status(200).json({
+    data: data,
+  });
+});
+
+router.post("/DebtRemind/Payment/:id", async (req, res) => {
+  const id = req.params.id;
+
+  const data = await customerModel.debtPayment(id);
+
+  if (data === null) {
+    return res.status(204).end();
+  }
+  res.status(200).json({
+    data: data,
+  });
+});
+
 export default router;
