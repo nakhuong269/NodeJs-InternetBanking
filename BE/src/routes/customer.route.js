@@ -8,10 +8,15 @@ router.get("/GetListRecipient/:id", async (req, res) => {
   const data = await customerModel.findAllRecipientByAccountId(id);
 
   if (data === null) {
-    return res.status(204).end();
+    return res.status(200).json({
+      message: "Get list reccipient failed",
+      success: false,
+    });
   }
   res.status(200).json({
     data: data,
+    success: true,
+    message: "Get list recipient successfully",
   });
 });
 
@@ -21,10 +26,15 @@ router.get("/GetListTransaction/:id", async (req, res) => {
   const data = await customerModel.findAllTransactionByAccountId(id);
 
   if (data === null) {
-    return res.status(204).end();
+    return res.status(200).json({
+      message: "Get list transaction failed",
+      success: false,
+    });
   }
   res.status(200).json({
     data: data,
+    success: true,
+    message: "Get list transaction successfully",
   });
 });
 
@@ -34,10 +44,15 @@ router.get("/GetListAccountPayment/:id", async (req, res) => {
   const data = await customerModel.findAllPaymentAccountById(id);
 
   if (data === null) {
-    return res.status(204).end();
+    return res.status(200).json({
+      message: "Get list account payment failed",
+      success: false,
+    });
   }
   res.status(200).json({
     data: data,
+    success: true,
+    message: "Get list account payment successfully",
   });
 });
 
@@ -49,10 +64,12 @@ router.post("/recipient", async (req, res) => {
   if (data !== null) {
     res.status(201).json({
       message: "Add a recipient successfully!",
+      success: true,
     });
   } else {
-    res.status(400).json({
+    res.status(200).json({
       message: "Add a recipient failed!",
+      success: false,
     });
   }
 });
@@ -66,10 +83,12 @@ router.patch("/recipient/:id", async (req, res) => {
   if (data === 1) {
     res.status(200).json({
       message: "Update a recipient successfully!",
+      success: true,
     });
   } else {
-    res.status(400).json({
+    res.status(200).json({
       message: "Update a recipient failed!",
+      success: false,
     });
   }
 });
@@ -82,10 +101,12 @@ router.delete("/recipient/:id", async (req, res) => {
   if (data === 1) {
     res.status(200).json({
       message: "Delete a recipient successfully!",
+      success: true,
     });
   } else {
-    res.status(400).json({
+    res.status(200).json({
       message: "Delete a recipient failed!",
+      success: false,
     });
   }
 });
@@ -96,10 +117,15 @@ router.get("/DebtRemind/GetListDebtRemindBySelf/:id", async (req, res) => {
   const data = await customerModel.findAllDebtRemindByAccountId(id);
 
   if (data === null) {
-    return res.status(204).end();
+    return res.status(200).json({
+      success: false,
+      message: "Get list debt remind failed",
+    });
   }
   res.status(200).json({
     data: data,
+    success: true,
+    message: "Get list debt remind successfully",
   });
 });
 
@@ -109,10 +135,15 @@ router.get("/DebtRemind/GetListDebtRemindByAnother/:id", async (req, res) => {
   const data = await customerModel.findAllDebtRemindByAnotherAccountSend(id);
 
   if (data === null) {
-    return res.status(204).end();
+    return res.status(200).json({
+      success: false,
+      message: "Get list debt remind failed",
+    });
   }
   res.status(200).json({
     data: data,
+    success: true,
+    message: "Get list debt remind successfully",
   });
 });
 
@@ -121,10 +152,15 @@ router.post("/DebtRemind", async (req, res) => {
   const data = await customerModel.createDebtRemind(debt);
 
   if (data === null) {
-    return res.status(204).end();
+    return res.status(200).json({
+      success: false,
+      message: "Create deb remind failed",
+    });
   }
   res.status(200).json({
     data: data,
+    success: true,
+    message: "Create deb remind succesfully",
   });
 });
 
@@ -134,10 +170,15 @@ router.delete("/DebtRemind/:id", async (req, res) => {
   const data = await customerModel.cancelDebtRemind(id);
 
   if (data === null) {
-    return res.status(204).end();
+    return res.status(200).json({
+      success: false,
+      message: "Delete deb remind failed",
+    });
   }
   res.status(200).json({
     data: data,
+    success: true,
+    message: "Delete deb remind succesfully",
   });
 });
 
@@ -147,10 +188,15 @@ router.post("/DebtRemind/Payment/:id", async (req, res) => {
   const data = await customerModel.debtPayment(id);
 
   if (data === null) {
-    return res.status(204).end();
+    return res.status(200).json({
+      success: false,
+      message: "Payment deb remind failed",
+    });
   }
   res.status(200).json({
     data: data,
+    success: true,
+    message: "Payment deb remind succesfully",
   });
 });
 

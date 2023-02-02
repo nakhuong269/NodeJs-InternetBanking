@@ -1,5 +1,6 @@
 import db from "../utils/db.js";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 export async function findByIdCard(idCard) {
   const account = await db("user").where("IDCARD", idCard);
@@ -74,13 +75,19 @@ export async function register(userInfo) {
 
 export async function login(accountInfo) {
   const user = await db("account")
-    .select(["Username", "Password"])
+    .select(["ID", "Username", "Password", "Role"])
     .where("Username", accountInfo.Username);
   if (user.length !== 0) {
     if (bcrypt.compareSync(accountInfo.Password, user[0].Password)) {
-      return true;
+      const accessToken = jwt.sign(
+        { id: user[0].ID, role: user[0].Role },
+        process.env.JWT_ACCESS_TOKEN,
+        { expiresIn: "60s" }
+      );
+      console.log(user);
+      return { isLogged: true, accessToken };
     }
-    return false;
+    return { isLogged: false };
   }
-  return false;
+  return { isLogged: false };
 }

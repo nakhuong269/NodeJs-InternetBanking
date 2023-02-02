@@ -9,10 +9,15 @@ router.get("/GetInfoUser/:accountNumber", async (req, res) => {
   const data = await genericModel.GetInfoUserByAccountNumber(accountNumber);
 
   if (data === null) {
-    return res.status(204).end();
+    return res.status(200).json({
+      success: false,
+      message: "Get info user failed",
+    });
   }
   res.status(200).json({
     data: data,
+    success: true,
+    message: "Get info user succesfully",
   });
 });
 
@@ -22,10 +27,15 @@ router.post("/InternalTransfer", async (req, res) => {
   const data = await genericModel.InternalTransfer(transaction);
 
   if (data === null) {
-    return res.status(204).end();
+    return res.status(200).json({
+      success: false,
+      message: "Internal transfer failed",
+    });
   }
   res.status(200).json({
     data: data,
+    success: true,
+    message: "Internal transfer succesfully",
   });
 });
 

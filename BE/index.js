@@ -1,5 +1,7 @@
+import { config } from "dotenv";
 import express from "express";
 import morgan from "morgan";
+import cors from "cors";
 import asyncError from "express-async-errors";
 
 // import router
@@ -10,9 +12,17 @@ import adminRouter from "./src/routes/admin.route.js";
 import employeeRouter from "./src/routes/employee.route.js";
 
 const app = express();
+// config dot env
+config();
 
 app.use(express.json());
 app.use(morgan("dev"));
+
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+  })
+);
 
 app.get("/", (req, res) => {
   res.json({ msg: "Hello world" });

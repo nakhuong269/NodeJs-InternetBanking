@@ -10,10 +10,15 @@ router.post("/recharge", async (req, res) => {
   console.log(data);
 
   if (data === null) {
-    return res.status(204).end();
+    return res.status(200).json({
+      success: false,
+      message: "Recharge failed",
+    });
   }
   res.status(200).json({
-    ...data,
+    data: data,
+    success: true,
+    message: "Recharge succesfully",
   });
 });
 
@@ -25,10 +30,15 @@ router.get("/ListTransaction/:accountNumber", async (req, res) => {
   );
 
   if (data === null) {
-    return res.status(204).end();
+    return res.status(200).json({
+      success: false,
+      message: "Get list transaction failed",
+    });
   }
   res.status(200).json({
-    ...data,
+    data: data,
+    success: true,
+    message: "Get list transaction succesfully",
   });
 });
 
