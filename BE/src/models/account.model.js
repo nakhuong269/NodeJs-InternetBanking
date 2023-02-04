@@ -1,6 +1,7 @@
 import db from "../utils/db.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import SendMail from "./mail.model.js";
 
 export async function findByIdCard(idCard) {
   const account = await db("user").where("IDCARD", idCard);
@@ -42,7 +43,6 @@ export async function register(userInfo) {
     .substring(0, 6)
     .toUpperCase();
 
-  console.log(password);
   //hash password
   const accountInfo = {
     Username: userInfo.Phone,
@@ -66,6 +66,15 @@ export async function register(userInfo) {
       accountPaymentInfo
     );
     await trx.commit();
+
+    //SendMail for user
+    await SendMail(
+      user.Email,
+      "Register Scuccessfully",
+      "",
+      `<Strong><h1>Thank for register</h1></Strong><br><p>Your password : ${password} </p>`
+    );
+
     return accountPaymentId;
   } catch (e) {
     await trx.rollback();

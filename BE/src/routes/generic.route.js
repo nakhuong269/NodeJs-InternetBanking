@@ -39,4 +39,36 @@ router.post("/InternalTransfer", async (req, res) => {
   });
 });
 
+router.get("/ListBank", async (req, res) => {
+  const data = await genericModel.getListBank();
+
+  if (data === null) {
+    return res.status(200).json({
+      success: false,
+      message: "Get list bank failed",
+    });
+  }
+  res.status(200).json({
+    data: data,
+    success: true,
+    message: "Get list bank succesfully",
+  });
+});
+
+router.get("/ListPaymentType", async (req, res) => {
+  const data = await genericModel.getListPaymentType();
+
+  if (data === null) {
+    return res.status(200).json({
+      success: false,
+      message: "Get list payment type failed",
+    });
+  }
+  res.status(200).json({
+    data: data,
+    success: true,
+    message: "Get list payment type succesfully",
+  });
+});
+
 export default router;

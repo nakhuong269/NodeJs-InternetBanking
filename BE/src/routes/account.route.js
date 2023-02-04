@@ -3,7 +3,8 @@ import recipientSchema from "../schemas/recipient.json" assert { type: "json" };
 import loginSchema from "../schemas/login.json" assert { type: "json" };
 import * as accountModel from "../models/account.model.js";
 import validate from "../middlewares/validate.mdw.js";
-import jwt from "jsonwebtoken";
+import SendMail from "../models/mail.model.js";
+
 const router = express.Router();
 
 router.post("/register", validate(recipientSchema), async (req, res) => {
@@ -22,6 +23,7 @@ router.post("/register", validate(recipientSchema), async (req, res) => {
       success: false,
     });
   }
+
   res
     .status(201)
     .json({ data: user, success: true, message: "Register succesfully" });

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { Button, Form, Input, Alert, Spin } from "antd";
 import {
   LockOutlined,
@@ -7,11 +7,14 @@ import {
   EyeTwoTone,
 } from "@ant-design/icons";
 import "../../Assets/CSS/Account.css";
-import { instance } from "../../utils";
+import { instance, parseJwt } from "../../utils";
 import ReCAPTCHA from "react-google-recaptcha";
 import { Link, useNavigate } from "react-router-dom";
+import { UserContext } from "../../contexts/userContext";
 
 function Login(props) {
+  const { setUser } = useContext(UserContext);
+
   const recaptchaRef = React.createRef();
 
   const navigate = useNavigate();
@@ -33,20 +36,27 @@ function Login(props) {
         Password: values.password,
       });
 
-      console.log(res.data);
       //Login Success
       if (res.data.success === true) {
         localStorage.setItem("App_AccessToken", res.data.data.accessToken);
+
         setLoginFailed(false);
+
+        const jwtDecoded = parseJwt(res.data.data.accessToken);
+
+        const role = jwtDecoded.role;
+
+        setUser(jwtDecoded.id);
+
         //Role
-        if (res.data.data.isStaff === false) {
+        if (role === 1) {
           navigate("/");
+        } else if (role === 3) {
+          navigate("/employee");
+        } else if (role === 2) {
+          navigate("/admin");
         } else {
-          if (res.data.data.roles === "0") {
-            navigate("/employee");
-          } else {
-            navigate("/admin");
-          }
+          return;
         }
       }
 
