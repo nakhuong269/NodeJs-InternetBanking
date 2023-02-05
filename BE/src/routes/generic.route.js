@@ -71,4 +71,23 @@ router.get("/ListPaymentType", async (req, res) => {
   });
 });
 
+router.post("/CheckOTP/:accountNumber", async (req, res) => {
+  const accountNumber = req.params.accountNumber || 0;
+  const otp = req.body || 0;
+
+  const data = await genericModel.checkOTPTransaction(accountNumber, otp);
+
+  if (data === null || data === false) {
+    return res.status(200).json({
+      success: false,
+      message: "OTP is not valid",
+    });
+  }
+  res.status(200).json({
+    data: data,
+    success: true,
+    message: "OTP is valid",
+  });
+});
+
 export default router;

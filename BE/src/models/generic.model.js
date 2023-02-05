@@ -26,7 +26,7 @@ export async function InternalTransfer(transaction) {
 
     const otp = Math.floor(100000 + Math.random() * 900000);
 
-    const resultGenerateOTP = await trx("otp").insert({
+    await trx("otp").insert({
       OTP: otp,
       TransactionID: transactionID[0],
     });
@@ -86,6 +86,58 @@ export async function getListPaymentType() {
     await trx.commit();
 
     return result;
+  } catch (error) {
+    await trx.rollback();
+    throw error;
+  }
+}
+
+export async function checkOTPTransaction(AccountNumber, OTPCode) {
+  const trx = await db.transaction();
+  try {
+    const result = await db("otp")
+      .join("transaction", "transaction.ID", "=", "otp.TransactionID")
+      .where("transaction.AccountPaymentSend", "=", AccountNumber)
+      .andWhere("otp.IsDeleted", false)
+      .orderBy("otp.CreatedDate", "desc")
+      .limit(1)
+      .select({
+        ID: "otp.ID",
+        OTP: "otp.OTP",
+        TransactionID: "otp.TransactionID",
+      });
+
+    if (result.length === 0) {
+      return null;
+    }
+
+    if (OTPCode.OTP === result[0].OTP) {
+      //trừ và công tiên
+
+      //get info transaction
+      const transactionInfo = (
+        await trx("transaction")
+          .where("ID", result[0].TransactionID)
+          .select(["AccountPaymentReceive", "AccountPaymentSend", "Amount"])
+      )[0];
+
+      //decrement balance account send
+      await trx("account_payment")
+        .decrement("Balance", transactionInfo.Amount)
+        .where("AccountNumber", transactionInfo.AccountPaymentSend);
+
+      //increment balance account receive
+      await trx("account_payment")
+        .increment("Balance", transactionInfo.Amount)
+        .where("AccountNumber", transactionInfo.AccountPaymentReceive);
+
+      await trx("otp").where("ID", result[0].ID).update({ IsDeleted: true });
+
+      await trx.commit();
+      return true;
+    }
+
+    return false;
   } catch (error) {
     await trx.rollback();
     throw error;

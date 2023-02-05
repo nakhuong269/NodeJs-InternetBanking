@@ -3,7 +3,6 @@ import recipientSchema from "../schemas/recipient.json" assert { type: "json" };
 import loginSchema from "../schemas/login.json" assert { type: "json" };
 import * as accountModel from "../models/account.model.js";
 import validate from "../middlewares/validate.mdw.js";
-import SendMail from "../models/mail.model.js";
 
 const router = express.Router();
 
