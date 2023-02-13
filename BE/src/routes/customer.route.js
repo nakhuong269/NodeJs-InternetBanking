@@ -1,5 +1,10 @@
 import express from "express";
 import * as customerModel from "../models/customer.model.js";
+import validate from "../middlewares/validate.mdw.js";
+import addRecipientSchema from "../schemas/addRecipient.json" assert { type: "json" };
+import updateRecipientSchema from "../schemas/updateRecipient.json" assert { type: "json" };
+import addDebtRemindSchema from "../schemas/addDebtRemind.json" assert { type: "json" };
+
 const router = express.Router();
 
 router.get("/GetListRecipient/:id", async (req, res) => {
@@ -56,7 +61,7 @@ router.get("/GetListAccountPayment/:id", async (req, res) => {
   });
 });
 
-router.post("/recipient", async (req, res) => {
+router.post("/recipient", validate(addRecipientSchema), async (req, res) => {
   const recipient = req.body;
 
   const data = await customerModel.addRecipient(recipient);
@@ -74,24 +79,28 @@ router.post("/recipient", async (req, res) => {
   }
 });
 
-router.patch("/recipient/:id", async (req, res) => {
-  const id = req.params.id || 0;
-  const recipient = req.body;
+router.patch(
+  "/recipient/:id",
+  validate(updateRecipientSchema),
+  async (req, res) => {
+    const id = req.params.id || 0;
+    const recipient = req.body;
 
-  const data = await customerModel.updateRecipient(id, recipient);
+    const data = await customerModel.updateRecipient(id, recipient);
 
-  if (data === 1) {
-    res.status(200).json({
-      message: "Update a recipient successfully!",
-      success: true,
-    });
-  } else {
-    res.status(200).json({
-      message: "Update a recipient failed!",
-      success: false,
-    });
+    if (data === 1) {
+      res.status(200).json({
+        message: "Update a recipient successfully!",
+        success: true,
+      });
+    } else {
+      res.status(200).json({
+        message: "Update a recipient failed!",
+        success: false,
+      });
+    }
   }
-});
+);
 
 router.delete("/recipient/:id", async (req, res) => {
   const id = req.params.id || 0;
@@ -147,7 +156,7 @@ router.get("/DebtRemind/GetListDebtRemindByAnother/:id", async (req, res) => {
   });
 });
 
-router.post("/DebtRemind", async (req, res) => {
+router.post("/DebtRemind", validate(addDebtRemindSchema), async (req, res) => {
   const debt = req.body;
   const data = await customerModel.createDebtRemind(debt);
 
@@ -182,22 +191,26 @@ router.delete("/DebtRemind/:id", async (req, res) => {
   });
 });
 
-router.post("/DebtRemind/Payment/:id", async (req, res) => {
-  const id = req.params.id;
+router.post(
+  "/DebtRemind/Payment/:id",
+  validate(addDebtRemindSchema),
+  async (req, res) => {
+    const id = req.params.id;
 
-  const data = await customerModel.debtPayment(id);
+    const data = await customerModel.debtPayment(id);
 
-  if (data === null) {
-    return res.status(200).json({
-      success: false,
-      message: "Payment deb remind failed",
+    if (data === null) {
+      return res.status(200).json({
+        success: false,
+        message: "Payment deb remind failed",
+      });
+    }
+    res.status(200).json({
+      data: data,
+      success: true,
+      message: "Payment deb remind succesfully",
     });
   }
-  res.status(200).json({
-    data: data,
-    success: true,
-    message: "Payment deb remind succesfully",
-  });
-});
+);
 
 export default router;

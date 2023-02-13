@@ -1,5 +1,8 @@
 import express from "express";
 import * as genericModel from "../models/generic.model.js";
+import validate from "../middlewares/validate.mdw.js";
+import otpSchema from "../schemas/otp.json" assert { type: "json" };
+import rechargeSchema from "../schemas/recharge.json" assert { type: "json" };
 
 const router = express.Router();
 
@@ -21,7 +24,7 @@ router.get("/GetInfoUser/:accountNumber", async (req, res) => {
   });
 });
 
-router.post("/InternalTransfer", async (req, res) => {
+router.post("/InternalTransfer", validate(rechargeSchema), async (req, res) => {
   const transaction = req.body;
 
   const data = await genericModel.InternalTransfer(transaction);
@@ -71,22 +74,51 @@ router.get("/ListPaymentType", async (req, res) => {
   });
 });
 
-router.post("/CheckOTP/:accountNumber", async (req, res) => {
-  const accountNumber = req.params.accountNumber || 0;
-  const otp = req.body || 0;
+router.post(
+  "/CheckOTP/:transactionID",
+  validate(otpSchema),
+  async (req, res) => {
+    const transactionID = req.params.transactionID || 0;
+    const isDebtRemind = req.query.isDebtRemind || false;
+    const idDebt = req.query.idDebt || 0;
+    const otp = req.body || 0;
 
-  const data = await genericModel.checkOTPTransaction(accountNumber, otp);
+    const data = await genericModel.checkOTPTransaction(
+      transactionID,
+      otp,
+      isDebtRemind,
+      idDebt
+    );
+
+    if (data === null || data === false) {
+      return res.status(200).json({
+        success: false,
+        message: "OTP is not valid",
+      });
+    }
+    res.status(200).json({
+      data: data,
+      success: true,
+      message: "OTP is valid",
+    });
+  }
+);
+
+router.get("/Transaction/:transactionID", async (req, res) => {
+  const transactionID = req.params.transactionID || 0;
+
+  const data = await genericModel.getInfoTransaction(transactionID);
 
   if (data === null || data === false) {
     return res.status(200).json({
       success: false,
-      message: "OTP is not valid",
+      message: "Get info transaction failed",
     });
   }
   res.status(200).json({
     data: data,
     success: true,
-    message: "OTP is valid",
+    message: "Get info transaction successfully",
   });
 });
 

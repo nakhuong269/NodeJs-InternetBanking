@@ -56,6 +56,7 @@ export async function findAllTransactionByAccountId(id) {
       ">=",
       moment(new Date()).subtract(1, "months").format("YYYY-MM-DD HH:mm:ss")
     )
+    .where("transaction.IsDeleted", false)
     .join("bank", "transaction.BankID", "=", "bank.ID")
     .join(
       "transaction_type",
@@ -114,14 +115,18 @@ export async function findAllDebtRemindByAccountId(id) {
     )
     .join("status", "status.ID", "=", "debt_remind.StatusID")
     .where("account_payment.AccountID", "=", id)
-    .select([
-      "debt_remind.AccountPaymentSend",
-      "debt_remind.AccountPaymentReceive",
-      "debt_remind.Amount",
-      "debt_remind.Content",
-      "status.Name",
-      "debt_remind.CreatedDate",
-    ]);
+    .andWhere("debt_remind.StatusID", "=", 1)
+    .select({
+      ID: "debt_remind.ID",
+      AccountPaymentSend: "debt_remind.AccountPaymentSend",
+      AccountPaymentReceive: "debt_remind.AccountPaymentReceive",
+      Amount: "debt_remind.Amount",
+      Content: "debt_remind.Content",
+      StatusDebt: "status.ID",
+      StatusName: "status.Name",
+      CreatedDate: "debt_remind.CreatedDate",
+    })
+    .orderBy("debt_remind.CreatedDate", "desc");
   if (rows.length === 0) {
     return null;
   }
@@ -139,14 +144,18 @@ export async function findAllDebtRemindByAnotherAccountSend(id) {
     )
     .join("status", "status.ID", "=", "debt_remind.StatusID")
     .where("account_payment.AccountID", "=", id)
-    .select([
-      "debt_remind.AccountPaymentSend",
-      "debt_remind.AccountPaymentReceive",
-      "debt_remind.Amount",
-      "debt_remind.Content",
-      "status.Name",
-      "debt_remind.CreatedDate",
-    ]);
+    .andWhere("debt_remind.StatusID", "=", 1)
+    .select({
+      ID: "debt_remind.ID",
+      AccountPaymentSend: "debt_remind.AccountPaymentSend",
+      AccountPaymentReceive: "debt_remind.AccountPaymentReceive",
+      Amount: "debt_remind.Amount",
+      Content: "debt_remind.Content",
+      StatusDebt: "status.ID",
+      StatusName: "status.Name",
+      CreatedDate: "debt_remind.CreatedDate",
+    })
+    .orderBy("debt_remind.CreatedDate", "desc");
   if (rows.length === 0) {
     return null;
   }
@@ -215,13 +224,6 @@ export async function cancelDebtRemind(id) {
 export async function debtPayment(id) {
   const trx = await db.transaction();
   try {
-    const resultUpdateDebt = await trx("debt_remind")
-      .where("ID", "=", id)
-      .update({ statusID: 2 });
-    if (resultUpdateDebt === 0) {
-      return null;
-    }
-
     let debtPayment = await trx("debt_remind")
       .where("ID", "=", id)
       .select([
@@ -238,9 +240,9 @@ export async function debtPayment(id) {
       BankID: 1,
     };
 
-    console.log(debtPayment);
-
     const resultDebtPayment = await InternalTransfer(debtPayment);
+
+    console.log(resultDebtPayment);
 
     await trx.commit();
 

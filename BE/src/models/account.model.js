@@ -52,7 +52,7 @@ export async function register(userInfo) {
 
   const trx = await db.transaction();
   try {
-    //create account for user and get id user insert
+    //create user for user and get id user insert
     const accountId =
       (await trx("user").insert(user)) &&
       (await trx("account").insert(accountInfo));
@@ -78,6 +78,7 @@ export async function register(userInfo) {
     return accountPaymentId;
   } catch (e) {
     await trx.rollback();
+    console.log(e);
     throw e;
   }
 }

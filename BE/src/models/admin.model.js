@@ -13,7 +13,8 @@ export async function GetListEmployee() {
       "user.Phone",
       "user.IDCard",
       "user.CreatedDate",
-    ]);
+    ])
+    .where("account.IsDeleted", false);
 
   if (rows.length === 0) {
     return null;
@@ -37,9 +38,11 @@ export async function deleteEmployee(id) {
   );
 }
 
-export async function findAllTransaction() {
+export async function findAllTransaction(month, year) {
   const rows = await db("transaction")
     .where("transactionTypeID", "=", 2)
+    .andWhereRaw("Month(transaction.CreatedDate) = ?", [month])
+    .andWhereRaw("Year(transaction.CreatedDate) = ?", [year])
     .join("bank", "transaction.BankID", "=", "bank.ID")
     .join(
       "transaction_type",

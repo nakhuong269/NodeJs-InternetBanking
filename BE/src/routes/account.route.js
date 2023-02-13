@@ -1,12 +1,12 @@
 import express from "express";
-import recipientSchema from "../schemas/recipient.json" assert { type: "json" };
+import registerSchema from "../schemas/register.json" assert { type: "json" };
 import loginSchema from "../schemas/login.json" assert { type: "json" };
 import * as accountModel from "../models/account.model.js";
 import validate from "../middlewares/validate.mdw.js";
 
 const router = express.Router();
 
-router.post("/register", validate(recipientSchema), async (req, res) => {
+router.post("/register", validate(registerSchema), async (req, res) => {
   let user = req.body;
 
   const ret = await accountModel.register(user);

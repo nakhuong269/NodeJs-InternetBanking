@@ -1,0 +1,16 @@
+{
+  "type": "object",
+  "properties": {
+    "AccountPaymentSend": { "type": "string", "nullable": false },
+    "AccountPaymentReceive": { "type": "string", "nullable": false },
+    "Amount": { "type": "string", "nullable": false },
+    "Content": { "type": "string", "nullable": false }
+  },
+  "required": [
+    "AccountPaymentSend",
+    "AccountPaymentReceive",
+    "Amount",
+    "Content"
+  ],
+  "additionalProperties": false
+}

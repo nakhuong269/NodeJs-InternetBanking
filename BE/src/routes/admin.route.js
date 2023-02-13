@@ -1,9 +1,12 @@
 import express from "express";
 import * as adminModel from "../models/admin.model.js";
 import verifyToken from "../middlewares/verifyToken.mdw.js";
+import updateEmployeeSchema from "../schemas/updateEmployee.json" assert { type: "json" };
+import addEmployee from "../schemas/addEmployee.json" assert { type: "json" };
+import validate from "../middlewares/validate.mdw.js";
 const router = express.Router();
 
-router.get("/", verifyToken, async (req, res) => {
+router.get("/", async (req, res) => {
   const data = await adminModel.GetListEmployee();
   if (data === null) {
     return res.status(204).end();
@@ -15,7 +18,7 @@ router.get("/", verifyToken, async (req, res) => {
   });
 });
 
-router.post("/", async (req, res) => {
+router.post("/", validate(addEmployee), async (req, res) => {
   const employee = req.body;
 
   const data = await adminModel.addEmployee(employee);
@@ -33,7 +36,7 @@ router.post("/", async (req, res) => {
   }
 });
 
-router.patch("/:id", async (req, res) => {
+router.patch("/:id", validate(updateEmployeeSchema), async (req, res) => {
   const id = req.params.id || 0;
   const employee = req.body;
 
@@ -70,7 +73,10 @@ router.delete("/:id", async (req, res) => {
 });
 
 router.get("/GetListTransaction", async (req, res) => {
-  const data = await adminModel.findAllTransaction();
+  const month = req.query.month || 0;
+  const year = req.query.year || 0;
+
+  const data = await adminModel.findAllTransaction(month, year);
 
   if (data === null) {
     return res.status(200).json({

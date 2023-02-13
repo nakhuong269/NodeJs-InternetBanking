@@ -1,0 +1,11 @@
+{
+  "type": "object",
+  "properties": {
+    "IDCard": { "type": "string", "nullable": false },
+    "Name": { "type": "string", "nullable": false },
+    "Phone": { "type": "string", "nullable": false },
+    "Email": { "type": "string", "nullable": false }
+  },
+  "required": ["IDCard", "Name", "Phone", "Email"],
+  "additionalProperties": false
+}

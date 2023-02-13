@@ -43,21 +43,20 @@ export async function recharge(rechargeInput) {
           Balance: balanceAccountReceive,
         });
     } else {
-      console.log(typeof AccountSend[0].Balance, typeof rechargeInput.Amount);
       return {
         message: "Not enough balance",
         success: false,
       };
     }
 
-    const result = await InternalTransfer(rechargeInput);
-
-    if (result === null) {
-      return null;
-    }
+    const transactionId = await trx("transaction").insert(rechargeInput);
 
     await trx.commit();
-    return { data: result, message: "Transaction successfully", success: true };
+    return {
+      data: transactionId,
+      message: "Transaction successfully",
+      success: true,
+    };
   } catch (error) {
     await trx.rollback();
     throw error;

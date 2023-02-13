@@ -1,0 +1,22 @@
+{
+  "type": "object",
+  "properties": {
+    "AccountPaymentSend": { "type": "string", "nullable": false },
+    "AccountPaymentReceive": { "type": "string", "nullable": false },
+    "Amount": { "type": "string", "nullable": false },
+    "Content": { "type": "string", "nullable": false },
+    "TransactionTypeID": { "type": "string", "nullable": false },
+    "PaymentFeeTypeID": { "type": "string", "nullable": false },
+    "BankID": { "type": "string", "nullable": false }
+  },
+  "required": [
+    "AccountPaymentSend",
+    "AccountPaymentReceive",
+    "Amount",
+    "Content",
+    "TransactionTypeID",
+    "PaymentFeeTypeID",
+    "BankID"
+  ],
+  "additionalProperties": false
+}

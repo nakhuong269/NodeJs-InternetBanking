@@ -1,0 +1,8 @@
+{
+  "type": "object",
+  "properties": {
+    "OTP": { "type": "string", "nullable": false }
+  },
+  "required": ["OTP"],
+  "additionalProperties": false
+}

@@ -1,0 +1,10 @@
+{
+  "type": "object",
+  "properties": {
+    "Name": { "type": "string", "nullable": false },
+    "AccountNumber": { "type": "string", "nullable": false },
+    "BankID": { "type": "number", "nullable": false }
+  },
+  "required": ["Name", "AccountNumber", "BankID"],
+  "additionalProperties": false
+}

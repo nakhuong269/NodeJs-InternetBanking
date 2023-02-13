@@ -1,9 +1,11 @@
 import express from "express";
 import * as employeeModel from "../models/employee.model.js";
+import validate from "../middlewares/validate.mdw.js";
+import rechargeSchema from "../schemas/recharge.json" assert { type: "json" };
 
 const router = express.Router();
 
-router.post("/recharge", async (req, res) => {
+router.post("/recharge", validate(rechargeSchema), async (req, res) => {
   const transaction = req.body;
 
   const data = await employeeModel.recharge(transaction);

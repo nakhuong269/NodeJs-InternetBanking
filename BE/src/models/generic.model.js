@@ -1,4 +1,3 @@
-import { error } from "ajv/dist/vocabularies/applicator/dependencies.js";
 import db from "../utils/db.js";
 import SendMail from "./mail.model.js";
 
@@ -92,32 +91,39 @@ export async function getListPaymentType() {
   }
 }
 
-export async function checkOTPTransaction(AccountNumber, OTPCode) {
+export async function getInfoTransaction(transactionID) {
+  const rows = await db("transaction").where("ID", "=", transactionID);
+
+  if (rows.length === 0) {
+    return null;
+  }
+  return rows;
+}
+
+export async function checkOTPTransaction(
+  transactionID,
+  OTPinfo,
+  isDebtRemind,
+  IdDebt
+) {
   const trx = await db.transaction();
   try {
-    const result = await db("otp")
-      .join("transaction", "transaction.ID", "=", "otp.TransactionID")
-      .where("transaction.AccountPaymentSend", "=", AccountNumber)
-      .andWhere("otp.IsDeleted", false)
-      .orderBy("otp.CreatedDate", "desc")
-      .limit(1)
-      .select({
-        ID: "otp.ID",
-        OTP: "otp.OTP",
-        TransactionID: "otp.TransactionID",
-      });
+    const resOTP = await db("otp")
+      .where("TransactionID", "=", transactionID)
+      .andWhere("IsDeleted", false)
+      .select(["ID", "OTP"]);
 
-    if (result.length === 0) {
+    if (resOTP.length === 0) {
       return null;
     }
 
-    if (OTPCode.OTP === result[0].OTP) {
+    if (OTPinfo.OTP === resOTP[0].OTP) {
       //trừ và công tiên
 
       //get info transaction
       const transactionInfo = (
         await trx("transaction")
-          .where("ID", result[0].TransactionID)
+          .where("ID", transactionID)
           .select(["AccountPaymentReceive", "AccountPaymentSend", "Amount"])
       )[0];
 
@@ -131,7 +137,16 @@ export async function checkOTPTransaction(AccountNumber, OTPCode) {
         .increment("Balance", transactionInfo.Amount)
         .where("AccountNumber", transactionInfo.AccountPaymentReceive);
 
-      await trx("otp").where("ID", result[0].ID).update({ IsDeleted: true });
+      await trx("otp").where("ID", resOTP[0].ID).update({ IsDeleted: true });
+
+      await trx("transaction")
+        .where("ID", transactionID)
+        .update({ UpdatedDate: trx.fn.now(), IsDeleted: false });
+
+      if (isDebtRemind === "true") {
+        console.log("vo day roi ne");
+        await trx("debt_remind").where("ID", IdDebt).update({ StatusID: 2 });
+      }
 
       await trx.commit();
       return true;

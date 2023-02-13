@@ -1,0 +1,28 @@
+{
+  "type": "object",
+  "$async": true,
+  "properties": {
+    "IDCard": {
+      "type": "string",
+      "nullable": false,
+      "idnumberExists": { "table": "user" }
+    },
+    "Name": { "type": "string", "nullable": false },
+    "Email": {
+      "type": "string",
+      "nullable": false,
+      "emailExists": { "table": "user" }
+    },
+    "Phone": {
+      "type": "string",
+      "nullable": false,
+      "phoneExists": { "table": "user" }
+    },
+    "Role": {
+      "type": "string",
+      "nullable": false
+    }
+  },
+  "required": ["IDCard", "Name", "Phone", "Email", "Role"],
+  "additionalProperties": false
+}
