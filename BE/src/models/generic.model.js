@@ -144,7 +144,6 @@ export async function checkOTPTransaction(
         .update({ UpdatedDate: trx.fn.now(), IsDeleted: false });
 
       if (isDebtRemind === "true") {
-        console.log("vo day roi ne");
         await trx("debt_remind").where("ID", IdDebt).update({ StatusID: 2 });
       }
 

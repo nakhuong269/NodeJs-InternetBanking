@@ -1,6 +1,7 @@
 import db from "../utils/db.js";
 import moment from "moment";
 import { InternalTransfer } from "./generic.model.js";
+import { cancelDebtSocket, paymentDebtSocket } from "./socket.model.js";
 
 export async function findAllRecipientByAccountId(accountId) {
   const rows = await db("recipient")
@@ -179,7 +180,7 @@ export async function createDebtRemind(debt) {
   }
 }
 
-export async function cancelDebtRemind(id) {
+export async function cancelDebtRemind(id, idUser) {
   const trx = await db.transaction();
   try {
     const result = await trx("debt_remind")
@@ -189,30 +190,10 @@ export async function cancelDebtRemind(id) {
       return null;
     }
 
-    // const row = await trx("debt_remind")
-    //   .where("debt_remind.ID", "=", idTransaction)
-    //   .join("status", "status.ID", "=", "debt_remind.StatusID")
-    //   .select({
-    //     ID: "debt_remind.ID",
-    //     AccountPaymentSend: "debt_remind.AccountPaymentSend",
-    //     AccountPaymentReceive: "debt_remind.AccountPaymentReceive",
-    //     Amount: "debt_remind.Amount",
-    //     Content: "debt_remind.Content",
-    //     Status: "status.Name",
-    //     CreatedDate: "debt_remind.CreatedDate",
-    //   });
-
-    // if (row[0].AccountPaymentSend === AccountNumber) {
-    //   //Send Notify
-    //   console.log("AccountPaymentSend");
-    // } else if (row[0].AccountPaymentReceive === AccountNumber) {
-    //   //Send Notify
-    //   console.log("AccountPaymentReceive");
-    // } else {
-    //   await trx.rollback();
-    //   return null;
-    // }
     await trx.commit();
+
+    //send notify socket
+    await cancelDebtSocket(id, idUser);
 
     return result;
   } catch (error) {
@@ -224,7 +205,7 @@ export async function cancelDebtRemind(id) {
 export async function debtPayment(id) {
   const trx = await db.transaction();
   try {
-    let debtPayment = await trx("debt_remind")
+    const debtPaymentInfo = await trx("debt_remind")
       .where("ID", "=", id)
       .select([
         "AccountPaymentSend",
@@ -233,8 +214,11 @@ export async function debtPayment(id) {
         "Content",
       ]);
 
-    debtPayment = {
-      ...debtPayment[0],
+    const debtPayment = {
+      AccountPaymentSend: debtPaymentInfo[0].AccountPaymentReceive,
+      AccountPaymentReceive: debtPaymentInfo[0].AccountPaymentSend,
+      Amount: debtPaymentInfo[0].Amount,
+      Content: debtPaymentInfo[0].Content,
       TransactionTypeID: 1,
       PaymentFeeTypeID: 1,
       BankID: 1,
@@ -246,9 +230,23 @@ export async function debtPayment(id) {
 
     await trx.commit();
 
+    await paymentDebtSocket(id);
+
     return resultDebtPayment;
   } catch (error) {
     await trx.rollback();
     throw error;
   }
+}
+
+export async function getInfoDebt(id) {
+  return await db("debt_remind")
+    .where("debt_remind.ID", id)
+    .select([
+      "debt_remind.ID",
+      "debt_remind.AccountPaymentSend",
+      "debt_remind.AccountPaymentReceive",
+      "debt_remind.Amount",
+      "debt_remind.Content",
+    ]);
 }

@@ -3,11 +3,11 @@
   "properties": {
     "AccountPaymentSend": { "type": "string", "nullable": false },
     "AccountPaymentReceive": { "type": "string", "nullable": false },
-    "Amount": { "type": "string", "nullable": false },
+    "Amount": { "type": "number", "nullable": false },
     "Content": { "type": "string", "nullable": false },
-    "TransactionTypeID": { "type": "string", "nullable": false },
-    "PaymentFeeTypeID": { "type": "string", "nullable": false },
-    "BankID": { "type": "string", "nullable": false }
+    "TransactionTypeID": { "type": "number", "nullable": false },
+    "PaymentFeeTypeID": { "type": "number", "nullable": false },
+    "BankID": { "type": "number", "nullable": false }
   },
   "required": [
     "AccountPaymentSend",

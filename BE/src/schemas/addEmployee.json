@@ -19,7 +19,7 @@
       "phoneExists": { "table": "user" }
     },
     "Role": {
-      "type": "string",
+      "type": "number",
       "nullable": false
     }
   },

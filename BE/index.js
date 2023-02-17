@@ -3,6 +3,7 @@ import express from "express";
 import morgan from "morgan";
 import cors from "cors";
 import asyncError from "express-async-errors";
+import socket from "./src/models/socket.model.js";
 
 // import router
 import genericRouter from "./src/routes/generic.route.js";
@@ -12,6 +13,7 @@ import adminRouter from "./src/routes/admin.route.js";
 import employeeRouter from "./src/routes/employee.route.js";
 
 const app = express();
+
 // config dot env
 config();
 

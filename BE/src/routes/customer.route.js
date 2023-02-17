@@ -4,6 +4,7 @@ import validate from "../middlewares/validate.mdw.js";
 import addRecipientSchema from "../schemas/addRecipient.json" assert { type: "json" };
 import updateRecipientSchema from "../schemas/updateRecipient.json" assert { type: "json" };
 import addDebtRemindSchema from "../schemas/addDebtRemind.json" assert { type: "json" };
+import io from "../models/socket.model.js";
 
 const router = express.Router();
 
@@ -173,10 +174,11 @@ router.post("/DebtRemind", validate(addDebtRemindSchema), async (req, res) => {
   });
 });
 
-router.delete("/DebtRemind/:id", async (req, res) => {
+router.delete("/DebtRemind/:idUser/:id", async (req, res) => {
   const id = req.params.id || 0;
+  const idUser = req.params.idUser || 0;
 
-  const data = await customerModel.cancelDebtRemind(id);
+  const data = await customerModel.cancelDebtRemind(id, idUser);
 
   if (data === null) {
     return res.status(200).json({
@@ -184,6 +186,8 @@ router.delete("/DebtRemind/:id", async (req, res) => {
       message: "Delete deb remind failed",
     });
   }
+
+  io.emit("cancel_debt", data);
   res.status(200).json({
     data: data,
     success: true,
@@ -191,26 +195,40 @@ router.delete("/DebtRemind/:id", async (req, res) => {
   });
 });
 
-router.post(
-  "/DebtRemind/Payment/:id",
-  validate(addDebtRemindSchema),
-  async (req, res) => {
-    const id = req.params.id;
+router.post("/DebtRemind/Payment/:id", async (req, res) => {
+  const id = req.params.id;
 
-    const data = await customerModel.debtPayment(id);
+  const data = await customerModel.debtPayment(id);
 
-    if (data === null) {
-      return res.status(200).json({
-        success: false,
-        message: "Payment deb remind failed",
-      });
-    }
-    res.status(200).json({
-      data: data,
-      success: true,
-      message: "Payment deb remind succesfully",
+  if (data === null) {
+    return res.status(200).json({
+      success: false,
+      message: "Payment deb remind failed",
     });
   }
-);
+  res.status(200).json({
+    data: data,
+    success: true,
+    message: "Payment deb remind succesfully",
+  });
+});
+
+router.get("/DebtRemind/:id", async (req, res) => {
+  const id = req.params.id || 0;
+
+  const data = await customerModel.getInfoDebt(id);
+
+  if (data === null) {
+    return res.status(200).json({
+      success: false,
+      message: "Get info deb remind failed",
+    });
+  }
+  res.status(200).json({
+    data: data,
+    success: true,
+    message: "Get info deb remind succesfully",
+  });
+});
 
 export default router;
