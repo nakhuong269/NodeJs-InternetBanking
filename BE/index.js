@@ -15,6 +15,11 @@ import employeeRouter from "./src/routes/employee.route.js";
 
 //middleware
 import verifyToken from "./src/middlewares/verifyToken.mdw.js";
+import {
+  authAdmin,
+  authEmployee,
+  authCutomer,
+} from "./src/middlewares/auth.mdw.js";
 
 const app = express();
 
@@ -44,9 +49,9 @@ app.get("/", (req, res) => {
 // use router
 app.use("/api/generic", verifyToken, genericRouter);
 app.use("/api/account", accountRouter);
-app.use("/api/customer", verifyToken, customerRouter);
-app.use("/api/admin", verifyToken, adminRouter);
-app.use("/api/employee", verifyToken, employeeRouter);
+app.use("/api/customer", verifyToken, authCutomer, customerRouter);
+app.use("/api/admin", verifyToken, authAdmin, adminRouter);
+app.use("/api/employee", verifyToken, authEmployee, employeeRouter);
 
 app.post("/", (req, res) => {
   res.status(201).json({

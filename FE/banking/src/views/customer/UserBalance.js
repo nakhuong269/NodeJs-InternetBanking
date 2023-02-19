@@ -1,7 +1,6 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Row, Form, Input, Card, Select } from "antd";
 import { instance, parseJwt } from "../../utils.js";
-import { UserContext } from "../../contexts/userContext.js";
 
 const formItemLayout = {
   labelCol: {
@@ -32,6 +31,8 @@ const UserBalance = () => {
           accountBalance: record.Balance,
         }))
       );
+    } else {
+      setData([]);
     }
   };
 
@@ -46,8 +47,8 @@ const UserBalance = () => {
 
   return (
     <Row type="flex" justify="center" align="middle">
-      <Card>
-        <Form>
+      <Card style={{ width: 300 }}>
+        <Form style={{ marginTop: 15 }}>
           <Form.Item
             {...formItemLayout}
             label="Account number"
@@ -68,6 +69,8 @@ const UserBalance = () => {
               value={
                 data[selectedAccountNumberID]
                   ? data[selectedAccountNumberID].accountBalance
+                      .replace(/\$\s?|(,*)/g, "")
+                      .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
                   : ""
               }
             />

@@ -51,3 +51,8 @@
   .ant-table-cell {
   background-color: #00b96b;
 }
+
+.ant-btn-primary {
+  background-color: #20b2aa;
+  border-color: #20b2aa;
+}

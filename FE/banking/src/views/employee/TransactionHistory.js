@@ -1,77 +1,85 @@
-import React, { useEffect, useState } from "react";
-import { List, Row, Spin, Card, Badge } from "antd";
-import { instance, parseJwt } from "../../utils.js";
+import React, { useState } from "react";
+import { List, Row, Input, Spin, Badge } from "antd";
+import { instance } from "../../utils.js";
 import moment from "moment/moment.js";
-import { LoadingOutlined } from "@ant-design/icons";
-const loadingIcon = (
-  <LoadingOutlined
-    style={{
-      fontSize: 24,
-    }}
-    spin
-  />
-);
+const { Search } = Input;
 
-function Transaction() {
-  const [userId] = useState(parseJwt(localStorage.App_AccessToken).id);
+function TransactionHistory() {
+  const [query, setQuery] = useState("");
 
   const [loading, setLoading] = useState(false);
 
-  const [accountNumber, setAccountNumber] = useState();
-
   const [data, setData] = useState([]);
 
-  const loadMoreData = async () => {
-    if (loading) {
-      return;
-    }
+  const loadMoreData = async (accountNumber) => {
     setLoading(true);
 
-    try {
-      const resGetListAccountPayment = await instance.get(
-        `Customer/GetListAccountPayment/${userId}`
-      );
-      if (resGetListAccountPayment.data.success === true) {
-        setAccountNumber(resGetListAccountPayment.data.data[0].AccountNumber);
+    const resTransactionHitory = await instance.get(
+      `employee/ListTransaction/${accountNumber}`
+    );
 
-        const resTransactionHitory = await instance.get(
-          `customer/GetListTransaction/${resGetListAccountPayment.data.data[0].AccountNumber}`
-        );
-        if (resTransactionHitory.data.success === true) {
-          setData(resTransactionHitory.data.data);
-        } else {
-          setData([]);
-        }
-      }
-    } catch {
-      setLoading(false);
+    if (resTransactionHitory.data.success === true) {
+      setData(resTransactionHitory.data.data);
+    } else {
+      setData([]);
     }
 
     setLoading(false);
   };
 
-  useEffect(() => {
-    loadMoreData();
-  }, []);
+  const onSearch = function (value) {
+    console.log(value);
+    if (value) {
+      setQuery(value);
+      loadMoreData(value);
+    }
+    setData([]);
+  };
 
   return (
     <Row type="flex" justify="center" align="middle">
-      <Card
-        title="Transaction History"
-        headStyle={{ background: "#20B2AA", textAlign: "center" }}
+      <div
+        style={{
+          width: 500,
+          background: "#001529",
+          padding: 40,
+          borderRadius: 10,
+          minWidth: 200,
+        }}
       >
+        <div style={{ textAlign: "center" }}>
+          <h1
+            style={{
+              color: "white",
+              fontSize: 32,
+              paddingBottom: 20,
+              margin: 0,
+            }}
+          >
+            Transaction History
+          </h1>
+        </div>
+        <div>
+          <Search
+            placeholder="Account number"
+            allowClear
+            enterButton="Search"
+            size="large"
+            onSearch={onSearch}
+            style={{ marginBottom: 15 }}
+          />
+        </div>
         <div
           id="scrollableDiv"
           style={{
-            width: 350,
-            height: 550,
+            height: 400,
             overflow: "auto",
             background: "#F8F8FF",
             border: "1px solid #e8e8e8",
             borderRadius: 4,
           }}
         >
-          <Spin spinning={loading} indicator={loadingIcon}>
+          <Spin spinning={loading}>
             <List
               dataSource={data}
               renderItem={(item) => (
@@ -132,40 +140,52 @@ function Transaction() {
                       <div style={{ paddingTop: 2 }}>
                         <h5>
                           {moment(item.TransactionTime).format(
-                            "HH:mm:ss DD/MM/YYYY"
+                            "HH:mm:ss DD-MM-YYYY"
                           )}
                         </h5>
                       </div>
                     }
                     description={
                       <div style={{ marginTop: -10 }}>
-                        <h5>
-                          {item.AccountPaymentSend === accountNumber
-                            ? "To: " + item.AccountPaymentReceive
-                            : "From: " + item.AccountPaymentSend}
-                          <p>{item.Content}</p>
-                        </h5>
+                        <strong>
+                          {item.AccountPaymentSend === query
+                            ? "To: " + item.AccountPaymentSend
+                            : "From: " + item.AccountPaymentReceive}
+                          <div style={{ marginTop: -5 }}>
+                            <p>{item.Content}</p>
+                          </div>
+                        </strong>
                       </div>
                     }
                   />
-                  <h4
-                    style={
-                      item.AccountPaymentSend === accountNumber
-                        ? {
+                  <h3
+                    style={(() => {
+                      if (item.isDebtRemind === true) {
+                        return {
+                          minWidth: 100,
+                          textAlign: "center",
+                          color: "#304FFE",
+                        };
+                      } else {
+                        if (item.AccountPaymentSend === query) {
+                          return {
                             minWidth: 100,
                             textAlign: "center",
                             color: "#FF1744",
                             paddingRight: 15,
-                          }
-                        : {
+                          };
+                        } else {
+                          return {
                             minWidth: 100,
                             textAlign: "center",
                             color: "#00C853",
                             paddingRight: 15,
-                          }
-                    }
+                          };
+                        }
+                      }
+                    })()}
                   >
-                    {item.AccountPaymentSend === accountNumber
+                    {item.AccountPaymentSend === query
                       ? "-" +
                         item.Amount.toLocaleString().replace(
                           /\B(?=(\d{3})+(?!\d))/g,
@@ -176,14 +196,14 @@ function Transaction() {
                           /\B(?=(\d{3})+(?!\d))/g,
                           ","
                         )}
-                  </h4>
+                  </h3>
                 </List.Item>
               )}
             />
           </Spin>
         </div>
-      </Card>
+      </div>
     </Row>
   );
 }
-export default Transaction;
+export default TransactionHistory;

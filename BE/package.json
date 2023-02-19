@@ -23,6 +23,8 @@
     "moment": "^2.29.4",
     "morgan": "^1.10.0",
     "mysql2": "^3.0.1",
-    "nodemon": "^2.0.20"
+    "nodemailer": "^6.9.1",
+    "nodemon": "^2.0.20",
+    "socket.io": "^4.6.0"
   }
 }

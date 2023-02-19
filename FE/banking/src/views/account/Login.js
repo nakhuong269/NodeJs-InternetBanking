@@ -40,6 +40,8 @@ function Login(props) {
       if (res.data.success === true) {
         localStorage.setItem("App_AccessToken", res.data.data.accessToken);
 
+        localStorage.setItem("App_RefreshToken", res.data.data.refreshToken);
+
         setLoginFailed(false);
 
         const jwtDecoded = parseJwt(res.data.data.accessToken);
@@ -47,6 +49,8 @@ function Login(props) {
         const role = jwtDecoded.role;
 
         setUser(jwtDecoded.id);
+
+        //socket.emit("connected", jwtDecoded.id);
 
         //Role
         if (role === 1) {

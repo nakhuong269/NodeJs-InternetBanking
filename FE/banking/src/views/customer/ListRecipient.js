@@ -20,10 +20,10 @@ import { instance, parseJwt } from "../../utils.js";
 
 const formItemLayout = {
   labelCol: {
-    span: 8,
+    span: 10,
   },
   wrapperCol: {
-    span: 12,
+    span: 14,
   },
 };
 
@@ -46,25 +46,26 @@ const ListRecipient = (props) => {
 
   const [userId] = useState(parseJwt(localStorage.App_AccessToken).id);
 
-  useEffect(
-    () => async () => {
-      const resBankReference = await instance.get(`generic/ListBank`);
-      if (resBankReference.data.success === true) {
-        setBankReference(
-          resBankReference.data.data.map((item) => ({
-            value: item.ID,
-            label: item.Name,
-          }))
-        );
-      }
-    },
-    []
-  );
-
   const appendData = async () => {
+    // get list recipient
     const res = await instance.get(`Customer/GetListRecipient/${userId}`, {});
     if (res.data.success === true) {
       setData(res.data.data);
+    } else {
+      setData([]);
+    }
+
+    // get list bank
+    const resBankReference = await instance.get(`generic/ListBank`);
+    if (resBankReference.data.success === true) {
+      setBankReference(
+        resBankReference.data.data.map((item) => ({
+          value: item.ID,
+          label: item.Name,
+        }))
+      );
+    } else {
+      setBankReference([]);
     }
   };
 
@@ -85,11 +86,10 @@ const ListRecipient = (props) => {
     const res = await instance.delete(`Customer/Recipient/${id}`, {});
     if (res.data.success === true) {
       success("Delete recipient", res.data.message);
+      appendData();
     } else {
       error("Delete recipient", res.data.message);
     }
-
-    appendData();
   };
 
   const confirmUpdate = async (id, paramsUpdate) => {
@@ -99,12 +99,12 @@ const ListRecipient = (props) => {
       BankID: paramsUpdate.bankEdit,
     });
     if (res.data.success === true) {
+      setModelEditRecipient(false);
       success("Update recipient", res.data.message);
+      appendData();
     } else {
       error("Update recipient", res.data.message);
     }
-
-    appendData();
   };
 
   const confirmAdd = async (userId, paramsAdd) => {
@@ -115,12 +115,12 @@ const ListRecipient = (props) => {
       BankID: paramsAdd.bankAdd,
     });
     if (res.data.success === true) {
+      setModelAddRecipient(false);
       success("Add recipient", res.data.message);
+      appendData();
     } else {
       error("Add recipient", res.data.message);
     }
-
-    appendData();
   };
 
   const onFillFormEdit = (item) => {
@@ -159,7 +159,7 @@ const ListRecipient = (props) => {
             <h2>Add Recipient</h2>
           </div>
         }
-        centered
+        width={350}
         open={modelAddRecipient}
         forceRender
         onCancel={() => setModelAddRecipient(false)}
@@ -204,18 +204,18 @@ const ListRecipient = (props) => {
             <Input
               placeholder="Please input your name"
               name="nameAdd"
-              style={{ minWidth: 200 }}
+              style={{ minWidth: 160 }}
             />
           </Form.Item>
           <Form.Item {...formItemLayout} name="nameAdd" label="Nickname">
             <Input
               placeholder="Please inputs nick name"
               name="nameAdd"
-              style={{ minWidth: 200 }}
+              style={{ minWidth: 160 }}
             />
           </Form.Item>
           <Form.Item {...formItemLayout} name="bankAdd" label="Bank">
-            <Select style={{ minWidth: 200 }} options={bankReference} />
+            <Select style={{ minWidth: 160 }} options={bankReference} />
           </Form.Item>
         </Form>
       </Modal>
@@ -226,7 +226,7 @@ const ListRecipient = (props) => {
             <h2>Edit Recipient</h2>
           </div>
         }
-        centered
+        width={350}
         open={modelEditRecipient}
         forceRender
         onCancel={() => setModelEditRecipient(false)}
@@ -272,18 +272,18 @@ const ListRecipient = (props) => {
             <Input
               placeholder="Please input your name"
               name="stkEdit"
-              style={{ minWidth: 200 }}
+              style={{ minWidth: 160 }}
             />
           </Form.Item>
           <Form.Item {...formItemLayout} name="nameEdit" label="Nickname">
             <Input
               placeholder="Please inputs nick name"
               name="nameEdit"
-              style={{ minWidth: 200 }}
+              style={{ minWidth: 160 }}
             />
           </Form.Item>
           <Form.Item {...formItemLayout} name="bankEdit" label="Bank">
-            <Select style={{ minWidth: 200 }} options={bankReference} />
+            <Select style={{ minWidth: 160 }} options={bankReference} />
           </Form.Item>
         </Form>
       </Modal>
@@ -311,11 +311,12 @@ const ListRecipient = (props) => {
             height: 450,
             overflow: "auto",
             background: "#F8F8FF",
+            border: "1px solid #e8e8e8",
+            borderRadius: 4,
           }}
         >
           <List
             dataSource={data}
-            bordered
             itemLayout="horizontal"
             renderItem={(item) => (
               <List.Item
@@ -323,7 +324,7 @@ const ListRecipient = (props) => {
                 onClick={() => {
                   setItemSelected(item.ID);
                   sendData(item);
-                  //console.log(item.id);
+                  console.log(item.ID);
                 }}
                 style={(() =>
                   item.ID === itemSelected

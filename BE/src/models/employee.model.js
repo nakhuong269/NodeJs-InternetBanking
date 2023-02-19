@@ -49,7 +49,9 @@ export async function recharge(rechargeInput) {
       };
     }
 
-    const transactionId = await trx("transaction").insert(rechargeInput);
+    const rechargeInfo = { ...rechargeInput, IsDeleted: false };
+
+    const transactionId = await trx("transaction").insert(rechargeInfo);
 
     await trx.commit();
     return {
