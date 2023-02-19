@@ -82,6 +82,7 @@ export async function findAllTransactionByAccountId(id) {
       BankName: "bank.Name",
       PaymentName: "payment_fee_type.Name",
       TransactionTime: "transaction.CreatedDate",
+      IsDebtRemind: "transaction.IsDebtRemind",
     })
     .orderBy("transaction.CreatedDate", "desc");
   if (rows.length === 0) {
@@ -185,7 +186,7 @@ export async function cancelDebtRemind(id, idUser) {
   try {
     const result = await trx("debt_remind")
       .where("ID", "=", id)
-      .update({ statusID: 3, IsDeleted: true });
+      .update({ statusID: 3, IsDeleted: true, UpdatedDate: db.fn.now() });
     if (result === 0) {
       return null;
     }
@@ -226,7 +227,9 @@ export async function debtPayment(id) {
 
     const resultDebtPayment = await InternalTransfer(debtPayment);
 
-    console.log(resultDebtPayment);
+    await trx("debt_remind")
+      .where("ID", "=", id)
+      .update({ UpdatedDate: db.fn.now() });
 
     await trx.commit();
 
@@ -248,5 +251,6 @@ export async function getInfoDebt(id) {
       "debt_remind.AccountPaymentReceive",
       "debt_remind.Amount",
       "debt_remind.Content",
+      "debt_remind.UpdatedDate",
     ]);
 }

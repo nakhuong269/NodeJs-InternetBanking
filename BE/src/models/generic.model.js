@@ -139,13 +139,18 @@ export async function checkOTPTransaction(
 
       await trx("otp").where("ID", resOTP[0].ID).update({ IsDeleted: true });
 
-      await trx("transaction")
-        .where("ID", transactionID)
-        .update({ UpdatedDate: trx.fn.now(), IsDeleted: false });
-
       if (isDebtRemind === "true") {
+        await trx("transaction").where("ID", transactionID).update({
+          UpdatedDate: trx.fn.now(),
+          IsDeleted: false,
+          IsDebtRemind: true,
+        });
         await trx("debt_remind").where("ID", IdDebt).update({ StatusID: 2 });
       }
+      await trx("transaction").where("ID", transactionID).update({
+        UpdatedDate: trx.fn.now(),
+        IsDeleted: false,
+      });
 
       await trx.commit();
       return true;

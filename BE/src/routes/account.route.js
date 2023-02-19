@@ -1,6 +1,8 @@
 import express from "express";
+import jwt from "jsonwebtoken";
 import registerSchema from "../schemas/register.json" assert { type: "json" };
 import loginSchema from "../schemas/login.json" assert { type: "json" };
+import refreshTokenSchema from "../schemas/refreshToken.json" assert { type: "json" };
 import * as accountModel from "../models/account.model.js";
 import validate from "../middlewares/validate.mdw.js";
 
@@ -42,6 +44,34 @@ router.post("/login", validate(loginSchema), async (req, res) => {
       .json({ message: "Login Successfully!", success: true, data: result });
   } else {
     res.status(200).json({ message: "Login Failed!", success: false });
+  }
+});
+
+router.post("/refresh", validate(refreshTokenSchema), async (req, res) => {
+  const { accessToken, refreshToken } = req.body;
+  try {
+    const { id, role } = jwt.verify(accessToken, process.env.JWT_ACCESS_TOKEN, {
+      ignoreExpiration: true,
+    });
+
+    const refresh = await accountModel.isValidRefreshToken(id, refreshToken);
+
+    if (refresh === true) {
+      const newAccessToken = jwt.sign(
+        { id, role },
+        process.env.JWT_ACCESS_TOKEN,
+        { expiresIn: "5m" }
+      );
+
+      return res.json({ success: true, accessToken: newAccessToken });
+    }
+    return res.status(401).json({
+      message: "Refresh token is revoked",
+    });
+  } catch {
+    return res.status(401).json({
+      message: "Invalid access token",
+    });
   }
 });
 

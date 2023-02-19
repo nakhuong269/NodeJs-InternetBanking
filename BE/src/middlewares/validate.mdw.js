@@ -32,6 +32,13 @@ export default function (schema) {
       validate: checkIdnumberExists,
     });
 
+    ajv.addKeyword({
+      keyword: "checkBalanceTransaction",
+      async: true,
+      type: "object",
+      validate: checkBalance,
+    });
+
     async function checkIdExists(schema, data) {
       const rows = await db(schema.table).where("ID", data);
 
@@ -53,18 +60,31 @@ export default function (schema) {
       return !rows.length; // true if record is found
     }
 
+    async function checkBalance(schema, data, parentSchema, dataPath) {
+      const balance = (
+        await db("account_payment")
+          .where("AccountNumber", data.AccountPaymentSend)
+          .select(["Balance"])
+      )[0].Balance;
+
+      if (Number(balance) < Number(data.Amount)) {
+        return false;
+      } else {
+        return true;
+      }
+    }
+
     const validate = ajv.compile(schema);
     if (schema.$async) {
       validate(req.body)
         .then(function (data) {
           //data is valid
-          console.log(data);
           next();
         })
         .catch(function (err) {
           if (!(err instanceof Ajv.ValidationError)) throw err;
           // data is invalid
-          console.log(err);
+          //console.log(err);
           res.status(400).json({
             error: err.errors,
           });

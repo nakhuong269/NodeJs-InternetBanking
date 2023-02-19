@@ -3,7 +3,7 @@
   "properties": {
     "AccountPaymentSend": { "type": "string", "nullable": false },
     "AccountPaymentReceive": { "type": "string", "nullable": false },
-    "Amount": { "type": "string", "nullable": false },
+    "Amount": { "type": "number", "nullable": false },
     "Content": { "type": "string", "nullable": false }
   },
   "required": [

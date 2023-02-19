@@ -92,12 +92,31 @@ export async function login(accountInfo) {
       const accessToken = jwt.sign(
         { id: user[0].ID, role: user[0].Role },
         process.env.JWT_ACCESS_TOKEN,
-        { expiresIn: "60s" }
+        { expiresIn: "5m" }
       );
-      console.log(user);
-      return { isLogged: true, accessToken };
+
+      const refreshToken = jwt.sign(
+        { id: user[0].ID, role: user[0].Role },
+        process.env.JWT_REFRESH_TOKEN,
+        { expiresIn: "7d" }
+      );
+
+      await db("account")
+        .where("Username", accountInfo.Username)
+        .update({ RefreshToken: refreshToken });
+      return { isLogged: true, accessToken, refreshToken };
     }
     return { isLogged: false };
   }
   return { isLogged: false };
+}
+
+export async function isValidRefreshToken(userId, refresh) {
+  const row = await db("account")
+    .where("ID", userId)
+    .andWhere("RefreshToken", refresh);
+  if (row.length === 0) {
+    return false;
+  }
+  return true;
 }

@@ -1,0 +1,9 @@
+{
+  "type": "object",
+  "properties": {
+    "accessToken": { "type": "string", "nullable": false },
+    "refreshToken": { "type": "string", "nullable": false }
+  },
+  "required": ["accessToken", "refreshToken"],
+  "additionalProperties": false
+}

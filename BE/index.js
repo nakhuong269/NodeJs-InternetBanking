@@ -4,6 +4,7 @@ import morgan from "morgan";
 import cors from "cors";
 import asyncError from "express-async-errors";
 import socket from "./src/models/socket.model.js";
+import fs from "fs";
 
 // import router
 import genericRouter from "./src/routes/generic.route.js";
@@ -12,12 +13,22 @@ import customerRouter from "./src/routes/customer.route.js";
 import adminRouter from "./src/routes/admin.route.js";
 import employeeRouter from "./src/routes/employee.route.js";
 
+//middleware
+import verifyToken from "./src/middlewares/verifyToken.mdw.js";
+
 const app = express();
 
 // config dot env
 config();
 
 app.use(express.json());
+
+//logger
+app.use(
+  morgan("common", {
+    stream: fs.createWriteStream("./src/loggers/access.log", { flags: "a" }),
+  })
+);
 app.use(morgan("dev"));
 
 app.use(
@@ -31,11 +42,11 @@ app.get("/", (req, res) => {
 });
 
 // use router
-app.use("/api/generic", genericRouter);
+app.use("/api/generic", verifyToken, genericRouter);
 app.use("/api/account", accountRouter);
-app.use("/api/customer", customerRouter);
-app.use("/api/admin", adminRouter);
-app.use("/api/employee", employeeRouter);
+app.use("/api/customer", verifyToken, customerRouter);
+app.use("/api/admin", verifyToken, adminRouter);
+app.use("/api/employee", verifyToken, employeeRouter);
 
 app.post("/", (req, res) => {
   res.status(201).json({

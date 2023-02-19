@@ -4,7 +4,6 @@ import validate from "../middlewares/validate.mdw.js";
 import addRecipientSchema from "../schemas/addRecipient.json" assert { type: "json" };
 import updateRecipientSchema from "../schemas/updateRecipient.json" assert { type: "json" };
 import addDebtRemindSchema from "../schemas/addDebtRemind.json" assert { type: "json" };
-import io from "../models/socket.model.js";
 
 const router = express.Router();
 
@@ -187,7 +186,6 @@ router.delete("/DebtRemind/:idUser/:id", async (req, res) => {
     });
   }
 
-  io.emit("cancel_debt", data);
   res.status(200).json({
     data: data,
     success: true,
