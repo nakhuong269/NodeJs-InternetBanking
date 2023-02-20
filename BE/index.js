@@ -29,11 +29,13 @@ config();
 app.use(express.json());
 
 //logger
-app.use(
-  morgan("common", {
-    stream: fs.createWriteStream("./src/loggers/access.log", { flags: "a" }),
-  })
-);
+if (process.env.NODE_ENV !== "production") {
+  app.use(
+    morgan("common", {
+      stream: fs.createWriteStream("./src/loggers/access.log", { flags: "a" }),
+    })
+  );
+}
 app.use(morgan("dev"));
 
 app.use(
