@@ -10,7 +10,7 @@ export default function verifyToken(req, res, next) {
       req.accessTokenPayload = decoded;
       next();
     } catch (err) {
-      console.error(err);
+      //console.error(err);
       res.status(401).json({ message: "Invalid access token" });
     }
   } else {

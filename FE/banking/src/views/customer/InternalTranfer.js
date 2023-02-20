@@ -63,13 +63,13 @@ const Tranfer = ({ nextCurrent }) => {
         BankID: 1,
       });
 
+      console.log(res);
+
       if (res.data.success === true) {
-        setLoadingTranfer(false);
         transaction[1](res.data.data[0]);
         nextCurrent();
-      } else {
-        setLoadingTranfer(false);
       }
+      return setLoadingTranfer(false);
     } catch {
       setLoadingTranfer(false);
     }
@@ -250,6 +250,7 @@ const VerifyOTP = ({ nextCurrent }) => {
   const [loadingVerifyOTP, setLoadingVerifyOTP] = useState(false);
 
   const onCheckOTP = async (otp) => {
+    setLoadingVerifyOTP(true);
     const res = await instance.post(`generic/CheckOTP/${transaction[0]}`, {
       OTP: otp.otp,
     });
@@ -257,10 +258,7 @@ const VerifyOTP = ({ nextCurrent }) => {
       setLoadingVerifyOTP(false);
       nextCurrent();
     }
-
-    setTimeout(() => {
-      setLoadingVerifyOTP(false);
-    }, 6000);
+    return setLoadingVerifyOTP(false);
   };
 
   return (
@@ -294,7 +292,6 @@ const VerifyOTP = ({ nextCurrent }) => {
                 type="primary"
                 onClick={() => {
                   form.submit();
-                  setLoadingVerifyOTP(true);
                 }}
               >
                 Submit
@@ -365,7 +362,6 @@ const ResultTransaction = () => {
     const res = await instance.get(
       `generic/GetInfoUser/${result.AccountPaymentReceive}`
     );
-    console.log(res);
     if (res.data.success === true) {
       setRecipientInfor(res.data.data[0]);
 
@@ -449,7 +445,12 @@ const ResultTransaction = () => {
         subTitle={
           result && (
             <div>
-              <h1 style={{ padding: 0, margin: 0 }}>{result.Amount}</h1>
+              <h1 style={{ padding: 0, margin: 0 }}>
+                {result.Amount.toLocaleString().replace(
+                  /\B(?=(\d{3})+(?!\d))/g,
+                  ","
+                )}
+              </h1>
               <p></p>
               <div style={{ padding: 0, margin: 0 }}>
                 <h3>
@@ -462,48 +463,54 @@ const ResultTransaction = () => {
                   Name: {result.TransactionType}
                 </h4>
               </Row> */}
-              <Row>
-                <h4 style={{ padding: 0, margin: 0 }}>
-                  From: {result.AccountPaymentSend}
-                </h4>
-              </Row>
-              <Row>
-                <h4 style={{ padding: 0, margin: 0 }}>
-                  To: {result.AccountPaymentReceive}
-                </h4>
-              </Row>
-              <Row>
-                <h4 style={{ padding: 0, margin: 0 }}>
-                  Transaction ID: {transaction[0]}
-                </h4>
-              </Row>
-              <Row>
-                <h4 style={{ padding: 0, margin: 0 }}>
-                  Content: {result.Content}
-                </h4>
-              </Row>
+              <div>
+                <Row>
+                  <h4 style={{ padding: 0, margin: 0 }}>
+                    From: {result.AccountPaymentSend}
+                  </h4>
+                </Row>
+                <Row>
+                  <h4 style={{ padding: 0, margin: 0 }}>
+                    To: {result.AccountPaymentReceive}
+                  </h4>
+                </Row>
+                <Row>
+                  <h4 style={{ padding: 0, margin: 0 }}>
+                    Transaction ID: {transaction[0]}
+                  </h4>
+                </Row>
+                <Row>
+                  <h4 style={{ padding: 0, margin: 0 }}>
+                    Content: {result.Content}
+                  </h4>
+                </Row>
+              </div>
             </div>
           )
         }
         extra={[
-          <Button type="primary" key="home" onClick={() => navigate("/")}>
-            Home
-          </Button>,
-          <Button
-            key="transactionhistory"
-            onClick={() => navigate("/transactionhistory")}
-          >
-            Transaction History
-          </Button>,
-          <Button
-            key="saverecipient"
-            onClick={() => {
-              setModelEditRecipient(true);
-              onFillModalAdd();
-            }}
-          >
-            Save Recipient
-          </Button>,
+          <div style={{ width: 350 }}>
+            <Button type="primary" key="home" onClick={() => navigate("/")}>
+              Home
+            </Button>
+            ,
+            <Button
+              key="transactionhistory"
+              onClick={() => navigate("/transactionhistory")}
+            >
+              Transaction History
+            </Button>
+            ,
+            <Button
+              key="saverecipient"
+              onClick={() => {
+                setModelEditRecipient(true);
+                onFillModalAdd();
+              }}
+            >
+              Save Recipient
+            </Button>
+          </div>,
         ]}
       />
     </>

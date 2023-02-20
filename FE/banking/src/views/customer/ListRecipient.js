@@ -324,7 +324,6 @@ const ListRecipient = (props) => {
                 onClick={() => {
                   setItemSelected(item.ID);
                   sendData(item);
-                  console.log(item.ID);
                 }}
                 style={(() =>
                   item.ID === itemSelected

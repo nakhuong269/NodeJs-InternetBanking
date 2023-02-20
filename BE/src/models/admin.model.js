@@ -40,7 +40,8 @@ export async function deleteEmployee(id) {
 
 export async function findAllTransaction(month, year) {
   const rows = await db("transaction")
-    .where("transactionTypeID", "=", 2)
+    //.where("transactionTypeID", "=", 2)
+    .where("transaction.IsDeleted", false)
     .andWhereRaw("Month(transaction.CreatedDate) = ?", [month])
     .andWhereRaw("Year(transaction.CreatedDate) = ?", [year])
     .join("bank", "transaction.BankID", "=", "bank.ID")

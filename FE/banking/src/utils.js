@@ -7,32 +7,6 @@ export const instance = axios.create({
   //headers: { "X-Custom-Header": `${localStorage.App_AccessToken}` },
 });
 
-// instance.interceptors.response.use(
-//   (response) => {
-//     return response;
-//   },
-//   async (error) => {
-//     if (error.response.status === 401) {
-//       const res = await axios.post(
-//         "http://localhost:4000/api/account/refresh",
-//         {
-//           accessToken: localStorage.App_AccessToken,
-//           refreshToken: localStorage.App_RefreshToken,
-//         }
-//       );
-//       console.log(res);
-//       if (res.data.success === true) {
-//         console.log("Before");
-//         console.log(localStorage.getItem("App_AccessToken"));
-//         localStorage.setItem("App_AccessToken", res.data.accessToken);
-//         console.log("After");
-//         console.log(localStorage.getItem("App_AccessToken"));
-//       }
-//     }
-//     return error;
-//   }
-// );
-
 instance.interceptors.request.use(
   async (config) => {
     const access_token = localStorage.getItem("App_AccessToken");

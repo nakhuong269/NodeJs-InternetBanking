@@ -1,7 +1,11 @@
 import db from "../utils/db.js";
 import moment from "moment";
 import { InternalTransfer } from "./generic.model.js";
-import { cancelDebtSocket, paymentDebtSocket } from "./socket.model.js";
+import {
+  createDebtSocket,
+  cancelDebtSocket,
+  paymentDebtSocket,
+} from "./socket.model.js";
 
 export async function findAllRecipientByAccountId(accountId) {
   const rows = await db("recipient")
@@ -173,6 +177,9 @@ export async function createDebtRemind(debt) {
       return null;
     }
     await trx.commit();
+
+    //send notify socket
+    await createDebtSocket(result[0]);
 
     return result;
   } catch (error) {

@@ -1,5 +1,6 @@
 import db from "../utils/db.js";
 import SendMail from "./mail.model.js";
+import { transactionSocket } from "./socket.model.js";
 
 export async function GetInfoUserByAccountNumber(accountNumber) {
   const row = await db("account_payment")
@@ -152,12 +153,16 @@ export async function checkOTPTransaction(
         IsDeleted: false,
       });
 
+      await transactionSocket(transactionID);
+
       await trx.commit();
+
       return true;
     }
 
     return false;
   } catch (error) {
+    console.error(error);
     await trx.rollback();
     throw error;
   }

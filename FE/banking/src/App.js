@@ -30,6 +30,10 @@ function App() {
 
   const [notifyDebtPayment, setNotifyDebtPayment] = useState(0);
 
+  const [notifyCreateDebt, setNotifyCreateDebt] = useState(0);
+
+  const [notifyTransaction, setNotifyTransaction] = useState(0);
+
   socket.on("server_cancel_debt", (id, isSend) => {
     setIDDebt(id);
     setIsSend(isSend);
@@ -37,6 +41,14 @@ function App() {
 
   socket.on("server_payment_debt", (idDebtPayment) => {
     setNotifyDebtPayment(idDebtPayment);
+  });
+
+  socket.on("server_create_debt", (idDebt) => {
+    setNotifyCreateDebt(idDebt);
+  });
+
+  socket.on("server_transaction", (idTrans) => {
+    setNotifyTransaction(idTrans);
   });
 
   const [skipCount, setSkipCount] = useState(true);
@@ -71,7 +83,7 @@ function App() {
           title: (
             <div style={{ display: "flex", justifyContent: "space-between" }}>
               <div>Cancel Debt Remind</div>
-              {moment(res.data.data[0].UpdatedDate).format("HH:mm:ss")}
+              {/* {moment(res.data.data[0].UpdatedDate).format("HH:mm:ss")} */}
             </div>
           ),
           description: (
@@ -90,6 +102,31 @@ function App() {
     }
   };
 
+  const loadCreateDebtNotify = async (id) => {
+    const res = await instance.get(`customer/DebtRemind/${notifyCreateDebt}`);
+    console.log(res);
+    if (res.data.success === true) {
+      const message = {
+        title: (
+          <div style={{ display: "flex", justifyContent: "space-between" }}>
+            <div>Debt Remind</div>
+            {/* {moment(res.data.data[0].UpdatedDate).format("HH:mm:ss")} */}
+          </div>
+        ),
+        description: (
+          <div>
+            Account number {res.data.data[0].AccountPaymentSend} has just
+            reminded you of debt: <br />
+            Amount: {res.data.data[0].Amount}
+            <br />
+            Content: {res.data.data[0].Content}
+          </div>
+        ),
+      };
+      openNotification(message);
+    }
+  };
+
   const loadDebtPaymentNotify = async (id) => {
     const res = await instance.get(`customer/DebtRemind/${notifyDebtPayment}`);
     if (res.data.success === true) {
@@ -97,13 +134,37 @@ function App() {
         title: (
           <div style={{ display: "flex", justifyContent: "space-between" }}>
             <div>Pament Debt Remind</div>
-            {moment(res.data.data[0].UpdatedDate).format("HH:mm:ss")}
+            {/* {moment(res.data.data[0].UpdatedDate).format("HH:mm:ss")} */}
           </div>
         ),
         description: (
           <div>
             Remind your debt has just been paid from the account number:{" "}
             {res.data.data[0].AccountPaymentReceive}
+            <br />
+            Amount: {res.data.data[0].Amount}
+            <br />
+            Content: {res.data.data[0].Content}
+          </div>
+        ),
+      };
+      openNotification(message);
+    }
+  };
+
+  const loadTransactionNotify = async (id) => {
+    const res = await instance.get(`generic/Transaction/${notifyTransaction}`);
+    if (res.data.success === true) {
+      const message = {
+        title: (
+          <div style={{ display: "flex", justifyContent: "space-between" }}>
+            <div>Transaction</div>
+            {/* {moment(res.data.data[0].UpdatedDate).format("HH:mm:ss")} */}
+          </div>
+        ),
+        description: (
+          <div>
+            From account number: {res.data.data[0].AccountPaymentSend}
             <br />
             Amount: {res.data.data[0].Amount}
             <br />
@@ -133,6 +194,24 @@ function App() {
     }
   }, [notifyDebtPayment]);
 
+  useEffect(() => {
+    if (skipCount) {
+      setSkipCount(false);
+    }
+    if (!skipCount) {
+      loadCreateDebtNotify(notifyDebtPayment);
+    }
+  }, [notifyCreateDebt]);
+
+  useEffect(() => {
+    if (skipCount) {
+      setSkipCount(false);
+    }
+    if (!skipCount) {
+      loadTransactionNotify(notifyTransaction);
+    }
+  }, [notifyTransaction]);
+
   const [api, contextHolder] = notification.useNotification();
 
   const openNotification = (message) => {
@@ -153,7 +232,9 @@ function App() {
               path="/"
               element={
                 <RequireAuth>
-                  <Customer />
+                  <RequireAuthCustomer>
+                    <Customer />
+                  </RequireAuthCustomer>
                 </RequireAuth>
               }
             />
@@ -161,7 +242,9 @@ function App() {
               path="/RecipientManage"
               element={
                 <RequireAuth>
-                  <RecipientManage />
+                  <RequireAuthCustomer>
+                    <RecipientManage />
+                  </RequireAuthCustomer>
                 </RequireAuth>
               }
             />
@@ -169,7 +252,9 @@ function App() {
               path="/TransactionHistory"
               element={
                 <RequireAuth>
-                  <Transaction />
+                  <RequireAuthCustomer>
+                    <Transaction />
+                  </RequireAuthCustomer>
                 </RequireAuth>
               }
             />
@@ -177,7 +262,9 @@ function App() {
               path="/InternalTransfer"
               element={
                 <RequireAuth>
-                  <InternalTranfer />
+                  <RequireAuthCustomer>
+                    <InternalTranfer />
+                  </RequireAuthCustomer>
                 </RequireAuth>
               }
             />
@@ -185,7 +272,9 @@ function App() {
               path="/DebtManage"
               element={
                 <RequireAuth>
-                  <DebtManage />
+                  <RequireAuthCustomer>
+                    <DebtManage />
+                  </RequireAuthCustomer>
                 </RequireAuth>
               }
             />
@@ -193,7 +282,9 @@ function App() {
               path="/Employee"
               element={
                 <RequireAuth>
-                  <Employee />
+                  <RequireAuthEmployee>
+                    <Employee />
+                  </RequireAuthEmployee>
                 </RequireAuth>
               }
             />
@@ -201,11 +292,20 @@ function App() {
               path="/Admin"
               element={
                 <RequireAuth>
-                  <Admin />
+                  <RequireAuthAdmin>
+                    <Admin />
+                  </RequireAuthAdmin>
                 </RequireAuth>
               }
             />
-            <Route path="/logout" element={<Logout />} />
+            <Route
+              path="/logout"
+              element={
+                <RequireAuth>
+                  <Logout />
+                </RequireAuth>
+              }
+            />
             <Route path="/login" element={<Login />} />
           </Routes>
         </Router>
@@ -218,6 +318,33 @@ function RequireAuth({ children, setID }) {
     return <Navigate to="/login" />;
   } else {
     socket.emit("connected", parseJwt(localStorage.App_AccessToken).id);
+  }
+
+  return children;
+}
+
+function RequireAuthAdmin({ children, setID }) {
+  const role = parseJwt(localStorage.App_AccessToken).role;
+  if (role !== 2) {
+    return <Navigate to="/login" />;
+  }
+
+  return children;
+}
+
+function RequireAuthEmployee({ children, setID }) {
+  const role = parseJwt(localStorage.App_AccessToken).role;
+  if (role !== 3) {
+    return <Navigate to="/login" />;
+  }
+
+  return children;
+}
+
+function RequireAuthCustomer({ children, setID }) {
+  const role = parseJwt(localStorage.App_AccessToken).role;
+  if (role !== 1) {
+    return <Navigate to="/login" />;
   }
 
   return children;
