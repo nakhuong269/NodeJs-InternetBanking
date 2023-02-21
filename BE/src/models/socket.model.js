@@ -11,7 +11,12 @@ httpServer.listen(4765 || process.env.SCOKET_PORT, () => {
 });
 
 const io = new Server(httpServer, {
-  cors: { origin: "http://localhost:3000" },
+  cors: {
+    origin: [
+      "http://localhost:3000",
+      "https://node-js-internet-banking.vercel.app",
+    ],
+  },
 });
 
 var users = [];
