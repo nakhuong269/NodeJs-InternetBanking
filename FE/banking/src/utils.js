@@ -1,7 +1,9 @@
 import axios from "axios";
 
 export const instance = axios.create({
-  baseURL: "http://localhost:4000/api/",
+  baseURL:
+    "https://internetbanking-production.up.railway.app/api" ||
+    "http://localhost:4000/api/",
   timeout: 5000,
   headers: { Authorization: `Bearer ${localStorage.App_AccessToken}` },
   //headers: { "X-Custom-Header": `${localStorage.App_AccessToken}` },
@@ -38,7 +40,8 @@ instance.interceptors.response.use(
       if (refresh_token) {
         try {
           const response = await axios.post(
-            "http://localhost:4000/api/account/refresh",
+            "https://internetbanking-production.up.railway.app/api/account/refresh" ||
+              "http://localhost:4000/api/account/refresh",
             {
               accessToken: access_token,
               refreshToken: refresh_token,
