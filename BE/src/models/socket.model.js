@@ -4,20 +4,22 @@ import { Server } from "socket.io";
 import db from "../utils/db.js";
 
 const app = express();
-
 const httpServer = createServer(app);
 
 app.use("/", (req, res) => {
   res.send("Hello from socket.io");
 });
 
-httpServer.listen(process.env.SOCKET_PORT || 4000, () => {
-  console.log(`Socket listening on port ${process.env.SOCKET_PORT || 4000}`);
+httpServer.listen(process.env.SOCKET_PORT || 4765, () => {
+  console.log(`Socket listening on port ${process.env.SOCKET_PORT || 4765}`);
 });
 
 const io = new Server(httpServer, {
   cors: {
-    origin: "*",
+    origin: [
+      "http://localhost:3000",
+      "https://node-js-internet-banking.vercel.app",
+    ],
   },
 });
 
