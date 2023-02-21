@@ -1,16 +1,11 @@
 import express from "express";
-import { createServer } from "https";
+import { createServer } from "http";
 import { Server } from "socket.io";
 import db from "../utils/db.js";
-import fs from "fs";
 
 const app = express();
-const options = {
-  key: fs.readFileSync("path/to/key.pem"),
-  cert: fs.readFileSync("path/to/cert.pem"),
-};
 
-const httpServer = createServer(options, app);
+const httpServer = createServer(app);
 
 app.use("/", (req, res) => {
   res.send("Hello from socket.io");
