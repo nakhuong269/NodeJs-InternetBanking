@@ -6,8 +6,12 @@ import db from "../utils/db.js";
 const app = express();
 const httpServer = createServer(app);
 
-httpServer.listen(4765 || process.env.SCOKET_PORT, () => {
-  console.log(`Socket listening on port ${process.env.SCOKET_PORT || 4765}`);
+app.use("/", (req, res) => {
+  res.send("Hello from socket.io");
+});
+
+httpServer.listen(4765 || process.env.SOCKET_PORT, () => {
+  console.log(`Socket listening on port ${process.env.SOCKET_PORT || 4765}`);
 });
 
 const io = new Server(httpServer, {

@@ -60,7 +60,7 @@ function Login(props) {
         } else if (role === 2) {
           navigate("/admin");
         } else {
-          return;
+          return setLoading(false);
         }
       }
 
@@ -68,8 +68,9 @@ function Login(props) {
       else {
         setLoginFailed(true);
       }
-      setLoading(false);
+
       setMessage(res.data.message);
+      return setLoading(false);
     } catch (err) {
       console.log(err);
     }

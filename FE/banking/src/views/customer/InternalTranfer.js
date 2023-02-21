@@ -12,7 +12,7 @@ import {
   Modal,
   InputNumber,
 } from "antd";
-import { UserOutlined } from "@ant-design/icons";
+import { UserOutlined, LoadingOutlined } from "@ant-design/icons";
 import { instance, parseJwt } from "../../utils.js";
 import ListRecipient from "./ListRecipient.js";
 import { StoreContext } from "../../contexts/AppContext.js";
@@ -27,6 +27,15 @@ const formItemLayout = {
     span: 14,
   },
 };
+
+const loadingIcon = (
+  <LoadingOutlined
+    style={{
+      fontSize: 24,
+    }}
+    spin
+  />
+);
 
 const Tranfer = ({ nextCurrent }) => {
   const { transaction } = useContext(StoreContext);
@@ -225,7 +234,7 @@ const Tranfer = ({ nextCurrent }) => {
           </Form.Item>
         </Card>
         <Form.Item style={{ textAlign: "center", marginTop: 15 }}>
-          <Spin spinning={loadingTranfer}>
+          <Spin spinning={loadingTranfer} indicator={loadingIcon}>
             <Button
               type="primary"
               block
@@ -233,7 +242,7 @@ const Tranfer = ({ nextCurrent }) => {
                 form.submit();
               }}
             >
-              Submit
+              Transaction confirmation
             </Button>
           </Spin>
         </Form.Item>
@@ -287,14 +296,14 @@ const VerifyOTP = ({ nextCurrent }) => {
           </Form.Item>
 
           <Form.Item style={{ textAlign: "center", marginTop: 15 }}>
-            <Spin spinning={loadingVerifyOTP}>
+            <Spin spinning={loadingVerifyOTP} indicator={loadingIcon}>
               <Button
                 type="primary"
                 onClick={() => {
                   form.submit();
                 }}
               >
-                Submit
+                Verify OTP
               </Button>
             </Spin>
           </Form.Item>

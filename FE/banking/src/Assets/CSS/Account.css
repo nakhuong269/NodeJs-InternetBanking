@@ -56,3 +56,11 @@
   background-color: #20b2aa;
   border-color: #20b2aa;
 }
+
+.center-screen {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}

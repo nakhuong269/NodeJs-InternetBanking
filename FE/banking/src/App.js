@@ -16,6 +16,8 @@ import InternalTranfer from "./views/customer/InternalTranfer";
 import DebtManage from "./views/customer/DebtManage";
 import Employee from "./views/employee/Employee";
 import Admin from "./views/admin/Admin";
+import ChangePassword from "./views/account/ChangePassword";
+import ForgotPassword from "./views/account/ForgotPassword";
 import socket from "./socket";
 import { notification } from "antd";
 import { instance, parseJwt } from "./utils";
@@ -303,6 +305,26 @@ function App() {
               element={
                 <RequireAuth>
                   <Logout />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/ChangePassword"
+              element={
+                <RequireAuth>
+                  <RequireAuthCustomer>
+                    <ChangePassword />
+                  </RequireAuthCustomer>
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/ForgotPassword"
+              element={
+                <RequireAuth>
+                  <RequireAuthCustomer>
+                    <ForgotPassword />
+                  </RequireAuthCustomer>
                 </RequireAuth>
               }
             />
