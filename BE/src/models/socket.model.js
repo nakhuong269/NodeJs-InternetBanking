@@ -1,25 +1,28 @@
 import express from "express";
-import { createServer } from "http";
+import { createServer } from "https";
 import { Server } from "socket.io";
 import db from "../utils/db.js";
+import fs from "fs";
 
 const app = express();
-const httpServer = createServer(app);
+const options = {
+  key: fs.readFileSync("path/to/key.pem"),
+  cert: fs.readFileSync("path/to/cert.pem"),
+};
+
+const httpServer = createServer(options, app);
 
 app.use("/", (req, res) => {
   res.send("Hello from socket.io");
 });
 
-httpServer.listen(4765 || process.env.SOCKET_PORT, () => {
-  console.log(`Socket listening on port ${process.env.SOCKET_PORT || 4765}`);
+httpServer.listen(process.env.SOCKET_PORT || 4000, () => {
+  console.log(`Socket listening on port ${process.env.SOCKET_PORT || 4000}`);
 });
 
 const io = new Server(httpServer, {
   cors: {
-    origin: [
-      "http://localhost:3000",
-      "https://node-js-internet-banking.vercel.app",
-    ],
+    origin: "*",
   },
 });
 
