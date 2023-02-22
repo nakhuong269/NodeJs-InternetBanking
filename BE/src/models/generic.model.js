@@ -167,3 +167,55 @@ export async function checkOTPTransaction(
     throw error;
   }
 }
+
+export async function checkOTPForgotPass(accountID, OTPinfo) {
+  const trx = await db.transaction();
+  try {
+    const resOTP = await db("otp")
+      .where("AccountID", "=", AccountID)
+      .andWhere("IsDeleted", false)
+      .select(["ID", "OTP"]);
+
+    if (resOTP.length === 0) {
+      return null;
+    }
+
+    if (OTPinfo === resOTP[0].OTP) {
+      // generate new password and send mail
+      //create random password 6 character
+      const password = (+new Date() * Math.random())
+        .toString(36)
+        .substring(0, 6)
+        .toUpperCase();
+
+      //hash password
+      const accountInfo = {
+        Password: bcrypt.hashSync(password, 10),
+      };
+
+      await trx("account").where("ID", accountID).update(accountInfo);
+
+      const emailUser = await trx("account")
+        .where("ID", accountID)
+        .select(["Email"]);
+
+      //SendMail for user
+      await SendMail(
+        emailUser[0].Email,
+        "Reset Password",
+        "",
+        `<Strong><h1>Reset Password Scuccessfully</h1></Strong><br><p>Your new password : ${password} </p>`
+      );
+
+      await trx.commit();
+
+      return true;
+    }
+
+    return false;
+  } catch (error) {
+    console.error(error);
+    await trx.rollback();
+    throw error;
+  }
+}

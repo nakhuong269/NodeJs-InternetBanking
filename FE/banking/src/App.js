@@ -318,16 +318,7 @@ function App() {
                 </RequireAuth>
               }
             />
-            <Route
-              path="/ForgotPassword"
-              element={
-                <RequireAuth>
-                  <RequireAuthCustomer>
-                    <ForgotPassword />
-                  </RequireAuthCustomer>
-                </RequireAuth>
-              }
-            />
+            <Route path="/ForgotPassword" element={<ForgotPassword />} />
             <Route path="/login" element={<Login />} />
           </Routes>
         </Router>

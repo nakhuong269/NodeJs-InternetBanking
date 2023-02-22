@@ -2,11 +2,12 @@ import express from "express";
 import { createServer } from "http";
 import { Server } from "socket.io";
 import db from "../utils/db.js";
+import cors from "cors";
 
 const app = express();
 const httpServer = createServer(app);
 
-app.use("/", (req, res) => {
+app.get("/", (req, res) => {
   res.send("Hello from socket.io");
 });
 
@@ -19,6 +20,7 @@ const io = new Server(httpServer, {
     origin: [
       "http://localhost:3000",
       "https://node-js-internet-banking.vercel.app",
+      "https://76.76.21.123:443",
     ],
   },
 });

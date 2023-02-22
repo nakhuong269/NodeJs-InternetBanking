@@ -39,6 +39,13 @@ export default function (schema) {
       validate: checkBalance,
     });
 
+    ajv.addKeyword({
+      keyword: "checkConfirmPassword",
+      async: true,
+      type: "object",
+      validate: checkConfirmPassword,
+    });
+
     async function checkIdExists(schema, data) {
       const rows = await db(schema.table).where("ID", data);
 
@@ -71,6 +78,14 @@ export default function (schema) {
         return false;
       } else {
         return true;
+      }
+    }
+
+    async function checkConfirmPassword(schema, data, parentSchema, dataPath) {
+      if (data.newPassword === data.confirmNewPassword) {
+        return true;
+      } else {
+        return false;
       }
     }
 

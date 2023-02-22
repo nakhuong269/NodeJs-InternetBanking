@@ -17,7 +17,7 @@ router.get("/GetInfoUser/:accountNumber", async (req, res) => {
       message: "Get info user failed",
     });
   }
-  res.status(200).json({
+  return res.status(200).json({
     data: data,
     success: true,
     message: "Get info user succesfully",
@@ -38,7 +38,7 @@ router.post(
         message: "Internal transfer failed",
       });
     }
-    res.status(200).json({
+    return res.status(200).json({
       data: data,
       success: true,
       message: "Internal transfer succesfully",
@@ -55,7 +55,7 @@ router.get("/ListBank", async (req, res) => {
       message: "Get list bank failed",
     });
   }
-  res.status(200).json({
+  return res.status(200).json({
     data: data,
     success: true,
     message: "Get list bank succesfully",
@@ -71,7 +71,7 @@ router.get("/ListPaymentType", async (req, res) => {
       message: "Get list payment type failed",
     });
   }
-  res.status(200).json({
+  return res.status(200).json({
     data: data,
     success: true,
     message: "Get list payment type succesfully",
@@ -100,7 +100,7 @@ router.post(
         message: "OTP is not valid",
       });
     }
-    res.status(200).json({
+    return res.status(200).json({
       data: data,
       success: true,
       message: "OTP is valid",
@@ -119,7 +119,7 @@ router.get("/Transaction/:transactionID", async (req, res) => {
       message: "Get info transaction failed",
     });
   }
-  res.status(200).json({
+  return res.status(200).json({
     data: data,
     success: true,
     message: "Get info transaction successfully",

@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 import registerSchema from "../schemas/register.json" assert { type: "json" };
 import loginSchema from "../schemas/login.json" assert { type: "json" };
 import refreshTokenSchema from "../schemas/refreshToken.json" assert { type: "json" };
+import changePasswordSchema from "../schemas/changePassword.json" assert { type: "json" };
 import * as accountModel from "../models/account.model.js";
 import validate from "../middlewares/validate.mdw.js";
 
@@ -19,13 +20,13 @@ router.post("/register", validate(registerSchema), async (req, res) => {
   };
 
   if (ret === null) {
-    res.status(200).json({
+    return res.status(200).json({
       message: "Register failed",
       success: false,
     });
   }
 
-  res
+  return res
     .status(201)
     .json({ data: user, success: true, message: "Register succesfully" });
 });
@@ -35,15 +36,15 @@ router.post("/login", validate(loginSchema), async (req, res) => {
   const result = await accountModel.login(accountInfo);
 
   if (result === null) {
-    res.status(400).end();
+    return res.status(400).end();
   }
 
   if (result.isLogged === true) {
-    res
+    return res
       .status(200)
       .json({ message: "Login Successfully!", success: true, data: result });
   } else {
-    res.status(200).json({ message: "Login Failed!", success: false });
+    return res.status(200).json({ message: "Login Failed!", success: false });
   }
 });
 
@@ -75,8 +76,70 @@ router.post("/refresh", validate(refreshTokenSchema), async (req, res) => {
   }
 });
 
-router.post("/forgotPassword", (req, res) => {});
+router.post("/forgotPassword", async (req, res) => {
+  const email = req.body.email;
 
-router.post("/resetPassword", (req, res) => {});
+  const result = await accountModel.forgotPassword(email);
+
+  if (result === null || result === false) {
+    return res.status(200).json({
+      message: "Forgot password failed",
+      success: false,
+    });
+  }
+
+  return res.status(200).json({
+    data: result,
+    success: true,
+    message: "Forgot password succesfully",
+  });
+});
+
+router.post(
+  "/changePassword",
+  validate(changePasswordSchema),
+  async (req, res) => {
+    const passwordInfo = req.body;
+
+    const result = await accountModel.changePassword(
+      passwordInfo.userId,
+      passwordInfo.currentPassword,
+      passwordInfo.newPassword
+    );
+
+    if (result === false) {
+      return res.status(200).json({
+        message: "Change password failed",
+        success: false,
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Change password succesfully",
+    });
+  }
+);
+
+router.post("/VerifyResetPassword", async (req, res) => {
+  const otpInfo = req.body;
+
+  const result = await accountModel.checkOTPForgotPass(
+    otpInfo.AccountID,
+    otpInfo.OTP
+  );
+
+  if (result === null || result === false) {
+    return res.status(200).json({
+      message: "Verify reset password failed",
+      success: false,
+    });
+  }
+
+  return res.status(200).json({
+    success: true,
+    message: "Verify reset password succesfully",
+  });
+});
 
 export default router;

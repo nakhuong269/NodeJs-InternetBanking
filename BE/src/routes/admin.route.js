@@ -11,7 +11,7 @@ router.get("/", async (req, res) => {
   if (data === null) {
     return res.status(204).end();
   }
-  res.status(200).json({
+  return res.status(200).json({
     data: data,
     message: "Get List Employee Successfully",
     success: true,
@@ -29,7 +29,7 @@ router.post("/", validate(addEmployee), async (req, res) => {
       success: true,
     });
   } else {
-    res.status(200).json({
+    return res.status(200).json({
       message: "Add a employee failed!",
       success: false,
     });
@@ -43,12 +43,12 @@ router.patch("/:id", validate(updateEmployeeSchema), async (req, res) => {
   const data = await adminModel.updateEmployee(id, employee);
 
   if (data === 1) {
-    res.status(200).json({
+    return res.status(200).json({
       message: "Update a employee successfully!",
       success: true,
     });
   } else {
-    res.status(200).json({
+    return res.status(200).json({
       message: "Update a employee failed!",
       success: false,
     });
@@ -60,12 +60,12 @@ router.delete("/:id", async (req, res) => {
   const data = await adminModel.deleteEmployee(id);
 
   if (data === 1) {
-    res.status(200).json({
+    return res.status(200).json({
       message: "Delete a employee successfully!",
       success: true,
     });
   } else {
-    res.status(200).json({
+    return res.status(200).json({
       message: "Delete a employee failed!",
       success: false,
     });
@@ -84,7 +84,7 @@ router.get("/GetListTransaction", async (req, res) => {
       message: "Get list transaction failed",
     });
   }
-  res.status(200).json({
+  return res.status(200).json({
     data: data,
     message: "Get list transaction succesfully",
     success: true,
