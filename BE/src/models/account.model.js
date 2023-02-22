@@ -120,3 +120,112 @@ export async function isValidRefreshToken(userId, refresh) {
   }
   return true;
 }
+
+export async function changePassword(userId, oldPass, newPass) {
+  const user = await db("account").where("ID", userId).select(["Password"]);
+
+  if (user.length === 0) {
+    return false;
+  }
+
+  if (bcrypt.compareSync(toString(oldPass), user[0].Password)) {
+    await db("account")
+      .where("ID", userId)
+      .update({
+        Password: bcrypt.hashSync(toString(newPass), 10),
+        UpdatedDate: db.fn.now(),
+      });
+
+    return true;
+  }
+
+  return false;
+}
+
+export async function forgotPassword(email) {
+  const user = await db("account")
+    .join("user", "user.ID", "=", "account.ID")
+    .where("user.Email", email)
+    .select(["account.ID"]);
+
+  if (user.length === 0) {
+    return false;
+  }
+
+  const otp = Math.floor(100000 + Math.random() * 900000);
+
+  const optChangePass = {
+    OTP: otp,
+    AccountID: user[0].ID,
+    CreatedDate: db.fn.now(),
+    UpdatedDate: db.fn.now(),
+  };
+
+  const result = await db("otp").insert(optChangePass);
+
+  if (result.length === 0) {
+    return false;
+  }
+
+  //SendMail for user
+  await SendMail(
+    email,
+    "Change password",
+    "",
+    `<Strong><h1>Your otp here to change password</h1></Strong><br><p>OTP : ${otp} </p>`
+  );
+
+  return user[0];
+}
+
+export async function checkOTPForgotPass(accountID, OTPinfo) {
+  const trx = await db.transaction();
+  try {
+    const resOTP = await db("otp")
+      .where("AccountID", "=", accountID)
+      .andWhere("IsDeleted", false)
+      .select(["ID", "OTP"]);
+
+    if (resOTP.length === 0) {
+      return null;
+    }
+
+    if (toString(OTPinfo) === toString(resOTP[0].OTP)) {
+      // generate new password and send mail
+      //create random password 6 character
+      const password = (+new Date() * Math.random())
+        .toString(36)
+        .substring(0, 6)
+        .toUpperCase();
+
+      //hash password
+      await trx("account")
+        .where("ID", accountID)
+        .update({
+          Password: bcrypt.hashSync(password, 10),
+        });
+
+      const emailUser = await trx("user")
+        .where("ID", accountID)
+        .select(["Email"]);
+
+      //SendMail for user
+      await SendMail(
+        emailUser[0].Email,
+        "Reset Password",
+        "",
+        `<Strong><h1>Reset Password Scuccessfully</h1></Strong><br><p>Your new password : ${password} </p>`
+      );
+
+      await trx.commit();
+
+      return true;
+    }
+
+    return false;
+  } catch (error) {
+    console.error(error);
+    await trx.rollback();
+    throw error;
+  }
+}

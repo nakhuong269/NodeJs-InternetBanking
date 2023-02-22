@@ -17,7 +17,7 @@ router.post("/recharge", validate(rechargeSchema), async (req, res) => {
       message: "Recharge failed",
     });
   }
-  res.status(200).json({
+  return res.status(200).json({
     data: data,
     success: true,
     message: "Recharge succesfully",
@@ -37,7 +37,7 @@ router.get("/ListTransaction/:accountNumber", async (req, res) => {
       message: "Get list transaction failed",
     });
   }
-  res.status(200).json({
+  return res.status(200).json({
     data: data,
     success: true,
     message: "Get list transaction succesfully",
