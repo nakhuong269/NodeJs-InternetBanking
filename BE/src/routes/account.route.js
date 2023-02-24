@@ -95,7 +95,7 @@ router.post("/forgotPassword", async (req, res) => {
   });
 });
 
-router.post(
+router.patch(
   "/changePassword",
   validate(changePasswordSchema),
   async (req, res) => {

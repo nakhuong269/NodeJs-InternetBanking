@@ -127,12 +127,11 @@ export async function changePassword(userId, oldPass, newPass) {
   if (user.length === 0) {
     return false;
   }
-
-  if (bcrypt.compareSync(toString(oldPass), user[0].Password)) {
+  if (bcrypt.compareSync(oldPass, user[0].Password)) {
     await db("account")
       .where("ID", userId)
       .update({
-        Password: bcrypt.hashSync(toString(newPass), 10),
+        Password: bcrypt.hashSync(newPass, 10),
         UpdatedDate: db.fn.now(),
       });
 

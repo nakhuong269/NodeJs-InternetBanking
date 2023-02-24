@@ -66,6 +66,7 @@ const DebtList = ({ isSelf, parentCallback, cantEdit }) => {
 
   const appendData = async () => {
     //Append data list debt
+    setLoading(true);
     if (isSelf === true) {
       const resDebtListBySelf = await instance.get(
         `Customer/DebtRemind/GetListDebtRemindBySelf/${userId}`
@@ -101,6 +102,8 @@ const DebtList = ({ isSelf, parentCallback, cantEdit }) => {
     } else {
       setListAccountNumber([]);
     }
+
+    return setLoading(false);
   };
 
   useEffect(() => {

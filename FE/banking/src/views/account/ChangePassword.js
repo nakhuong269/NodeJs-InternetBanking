@@ -21,14 +21,12 @@ function ChangePassword(props) {
       const token = parseJwt(localStorage.App_AccessToken);
       setLoading(true);
 
-      const res = await instance.patch(
-        `Account/ChangePassword/${token.userId}`,
-        {
-          currentPassword: values.currentPassword,
-          newPassword: values.newPassword,
-          confirmNewPassword: values.confirmNewPassword,
-        }
-      );
+      const res = await instance.patch(`Account/ChangePassword`, {
+        userId: token.id,
+        currentPassword: values.currentPassword,
+        newPassword: values.newPassword,
+        confirmNewPassword: values.confirmNewPassword,
+      });
 
       if (res.data.status === 200) {
         setFailed(false);
@@ -36,7 +34,7 @@ function ChangePassword(props) {
         setFailed(true);
       }
       setMessage(res.data.message);
-      setLoading(false);
+      return setLoading(false);
     } catch (err) {
       console.log(err);
     }
