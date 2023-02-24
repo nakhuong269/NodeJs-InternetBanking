@@ -1,39 +1,5 @@
-import express from "express";
-import { createServer } from "http";
-import { Server } from "socket.io";
+import { io, users } from "../../index.js";
 import db from "../utils/db.js";
-import cors from "cors";
-
-const app = express();
-const httpServer = createServer(app);
-
-app.get("/", (req, res) => {
-  res.send("Hello from socket.io");
-});
-
-httpServer.listen(process.env.SOCKET_PORT || 4765, () => {
-  console.log(`Socket listening on port ${process.env.SOCKET_PORT || 4765}`);
-});
-
-const io = new Server(httpServer, {
-  cors: {
-    origin: [
-      "http://localhost:3000",
-      "https://node-js-internet-banking.vercel.app",
-      "https://76.76.21.123:443",
-    ],
-  },
-});
-
-var users = [];
-
-io.on("connection", function (socket) {
-  socket.on("connected", function (userId) {
-    console.log(userId);
-    console.log("a new client connected");
-    users[userId] = socket.id;
-  });
-});
 
 //cancel debt remind
 export async function cancelDebtSocket(idDebt, idUser) {
@@ -137,5 +103,3 @@ export async function transactionSocket(idTrans) {
     .to(users[idUserReceive[0].AccountID])
     .emit("server_transaction", idTrans);
 }
-
-export default io;

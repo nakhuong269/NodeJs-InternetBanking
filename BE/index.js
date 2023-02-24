@@ -3,8 +3,10 @@ import express from "express";
 import morgan from "morgan";
 import cors from "cors";
 import asyncError from "express-async-errors";
-import socket from "./src/models/socket.model.js";
 import fs from "fs";
+import { createServer } from "http";
+import { Server } from "socket.io";
+import db from "./src/utils/db.js";
 
 // import router
 import genericRouter from "./src/routes/generic.route.js";
@@ -22,6 +24,22 @@ import {
 } from "./src/middlewares/auth.mdw.js";
 
 const app = express();
+const httpServer = createServer(app);
+const io = new Server(httpServer, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"],
+  },
+});
+var users = [];
+
+io.on("connection", function (socket) {
+  socket.on("connected", function (userId) {
+    console.log(userId);
+    console.log("a new client connected");
+    users[userId] = socket.id;
+  });
+});
 
 // config dot env
 config();
@@ -43,6 +61,7 @@ app.use(
     origin: [
       "http://localhost:3000",
       "https://node-js-internet-banking.vercel.app",
+      "https://76.76.21.123:443",
     ],
   })
 );
@@ -82,6 +101,8 @@ app.use((err, req, res, next) => {
 });
 
 const PORT = process.env.PORT || 4000;
-app.listen(PORT, () => {
+httpServer.listen(PORT, () => {
   console.log(`Server listening on port: ${PORT}`);
 });
+
+export { io, users };

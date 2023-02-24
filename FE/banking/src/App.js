@@ -37,19 +37,23 @@ function App() {
   const [notifyTransaction, setNotifyTransaction] = useState(0);
 
   socket.on("server_cancel_debt", (id, isSend) => {
+    console.log("server_cancel_debt");
     setIDDebt(id);
     setIsSend(isSend);
   });
 
   socket.on("server_payment_debt", (idDebtPayment) => {
+    console.log("server_payment_debt");
     setNotifyDebtPayment(idDebtPayment);
   });
 
   socket.on("server_create_debt", (idDebt) => {
+    console.log("server_create_debt");
     setNotifyCreateDebt(idDebt);
   });
 
   socket.on("server_transaction", (idTrans) => {
+    console.log("server_transaction");
     setNotifyTransaction(idTrans);
   });
 
@@ -230,6 +234,7 @@ function App() {
       <UserContext.Provider value={{ user, setUser }}>
         <Router>
           <Routes>
+            <Route path="*" element={<Navigate to="/login" />} />
             <Route
               path="/"
               element={
@@ -326,7 +331,7 @@ function App() {
     </>
   );
 }
-function RequireAuth({ children, setID }) {
+function RequireAuth({ children }) {
   if (!localStorage.App_AccessToken) {
     return <Navigate to="/login" />;
   } else {
@@ -336,7 +341,7 @@ function RequireAuth({ children, setID }) {
   return children;
 }
 
-function RequireAuthAdmin({ children, setID }) {
+function RequireAuthAdmin({ children }) {
   const role = parseJwt(localStorage.App_AccessToken).role;
   if (role !== 2) {
     return <Navigate to="/login" />;
@@ -345,7 +350,7 @@ function RequireAuthAdmin({ children, setID }) {
   return children;
 }
 
-function RequireAuthEmployee({ children, setID }) {
+function RequireAuthEmployee({ children }) {
   const role = parseJwt(localStorage.App_AccessToken).role;
   if (role !== 3) {
     return <Navigate to="/login" />;
@@ -354,7 +359,7 @@ function RequireAuthEmployee({ children, setID }) {
   return children;
 }
 
-function RequireAuthCustomer({ children, setID }) {
+function RequireAuthCustomer({ children }) {
   const role = parseJwt(localStorage.App_AccessToken).role;
   if (role !== 1) {
     return <Navigate to="/login" />;
