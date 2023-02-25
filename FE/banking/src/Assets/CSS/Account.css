@@ -15,7 +15,7 @@
 }
 
 .send-mail-form {
-  background-color: #ffffff;
+  background-color: #fff;
   min-width: 320px;
   max-width: 340px;
   padding: 40px 40px 10px 40px;
@@ -27,6 +27,7 @@
   left: 50%;
   -webkit-transform: translate(-50%, -50%);
   transform: translate(-50%, -50%);
+  -webkit-tap-highlight-color: transparent;
 }
 
 .ant-table
