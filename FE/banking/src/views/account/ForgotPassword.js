@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { Button, Form, Input, Alert, message, Spin } from "antd";
-import { MailOutlined, LockOutlined, KeyOutlined } from "@ant-design/icons";
+import { MailOutlined, KeyOutlined } from "@ant-design/icons";
 import { instance } from "../../utils";
 import { Link, useNavigate } from "react-router-dom";
 import "../../Assets/CSS/Account.css";
+import { useEffect } from "react";
 
 function ForgotPassword(props) {
   const [form] = Form.useForm();
@@ -24,12 +25,7 @@ function ForgotPassword(props) {
 
   const [loading, setLoading] = useState(false);
 
-  const success = () => {
-    messageApi.open({
-      type: "success",
-      content: messageApp,
-    });
-  };
+  const [skipCount, setSkipCount] = useState(true);
 
   const onSendMail = async function (values) {
     try {
@@ -40,15 +36,15 @@ function ForgotPassword(props) {
       });
 
       //Send mail successfully
-      if (res.data.status === 200) {
-        setIdUser(res.data.data);
+      if (res.data.success === true) {
+        setIdUser(res.data.data.ID);
         setSendMail(true);
-        setLoading(false);
       }
       //Send mail Failed
       else {
         setSendMail(false);
       }
+      return setLoading(false);
     } catch (err) {
       console.log(err);
     }
@@ -58,30 +54,39 @@ function ForgotPassword(props) {
     try {
       setLoading(true);
       // Push data to api
-      const res = await instance.patch(
-        `Account/ForgotPassword/ResetPassword/${idUser}`,
-        {
-          otpCode: values.OTPCode,
-          newPassword: values.NewPassword,
-          confirmNewPassword: values.ConfirmNewPassword,
-        }
-      );
+      const res = await instance.post(`account/verifyresetpassword`, {
+        AccountID: idUser,
+        OTP: values.OTPCode,
+      });
 
-      setLoading(false);
       //Reset password successfully
-      if (res.data.status === 200) {
-        success();
+
+      setMessageApp(res.data.message);
+
+      if (res.data.success === true) {
         setTimeout(() => navigate("/"), 2000);
       }
       //Reset password Failed
       else {
         setErrorSavePassword(true);
       }
-      setMessageApp(res.data.message);
+      return setLoading(false);
     } catch (err) {
       console.log(err);
     }
   };
+
+  useEffect(() => {
+    if (skipCount) {
+      setSkipCount(false);
+    }
+    if (!skipCount) {
+      messageApi.open({
+        type: "success",
+        content: messageApp,
+      });
+    }
+  }, [messageApp]);
 
   return (
     <div className="login_screen">
@@ -151,7 +156,6 @@ function ForgotPassword(props) {
                   <Form.Item>
                     <div className="container-forgot-register">
                       <Link to="/login">Sign in</Link>
-                      <Link to="/signup">Sign Up</Link>
                     </div>
                   </Form.Item>
                 </Spin>
@@ -215,36 +219,6 @@ function ForgotPassword(props) {
                     placeholder="OTP"
                     size="large"
                     autoComplete="off"
-                  />
-                </Form.Item>
-                <Form.Item
-                  name="NewPassword"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Please input your new password!",
-                    },
-                  ]}
-                >
-                  <Input.Password
-                    prefix={<LockOutlined className="site-form-item-icon" />}
-                    placeholder="New password"
-                    size="large"
-                  />
-                </Form.Item>
-                <Form.Item
-                  name="ConfirmNewPassword"
-                  rules={[
-                    {
-                      required: true,
-                      message: "Please input your confirm new password!",
-                    },
-                  ]}
-                >
-                  <Input.Password
-                    prefix={<LockOutlined className="site-form-item-icon" />}
-                    placeholder="Confirm new password"
-                    size="large"
                   />
                 </Form.Item>
                 <Form.Item>

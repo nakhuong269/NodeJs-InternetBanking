@@ -183,13 +183,14 @@ export async function checkOTPForgotPass(accountID, OTPinfo) {
     const resOTP = await db("otp")
       .where("AccountID", "=", accountID)
       .andWhere("IsDeleted", false)
-      .select(["ID", "OTP"]);
+      .select(["ID", "OTP"])
+      .orderBy("CreatedDate", "desc");
 
     if (resOTP.length === 0) {
       return null;
     }
 
-    if (toString(OTPinfo) === toString(resOTP[0].OTP)) {
+    if (OTPinfo === resOTP[0].OTP) {
       // generate new password and send mail
       //create random password 6 character
       const password = (+new Date() * Math.random())

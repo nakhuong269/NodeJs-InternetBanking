@@ -6,7 +6,6 @@ import {
   PhoneOutlined,
   IdcardOutlined,
 } from "@ant-design/icons";
-import "../../Assets/CSS/Register.css";
 import { instance } from "../../utils";
 
 function Register(props) {
