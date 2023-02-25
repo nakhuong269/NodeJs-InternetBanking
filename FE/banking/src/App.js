@@ -36,6 +36,8 @@ function App() {
 
   const [notifyTransaction, setNotifyTransaction] = useState(0);
 
+  const [skipCount, setSkipCount] = useState(true);
+
   socket.on("server_cancel_debt", (id, isSend) => {
     console.log("server_cancel_debt");
     setIDDebt(id);
@@ -56,8 +58,6 @@ function App() {
     console.log("server_transaction");
     setNotifyTransaction(idTrans);
   });
-
-  const [skipCount, setSkipCount] = useState(true);
 
   const loadDebtNotify = async (id) => {
     const res = await instance.get(`customer/DebtRemind/${idDebt}`);

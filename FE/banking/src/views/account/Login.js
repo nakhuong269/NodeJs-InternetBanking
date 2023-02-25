@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { Button, Form, Input, Alert, Spin } from "antd";
+import { Button, Form, Input, Alert, Spin, Row } from "antd";
 import {
   LockOutlined,
   UserOutlined,
@@ -87,85 +87,92 @@ function Login(props) {
 
   return (
     <div className="login_screen">
-      <div style={{ verticalAlign: "center" }}>
-        <Form
-          name="normal_login"
-          className="login-form"
-          onFinish={onLogin}
-          autoComplete="off"
-        >
-          <div>
-            <Spin spinning={loading}>
-              <Form.Item
-                name="username"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please input your Username!",
-                  },
-                ]}
-              >
-                <Input
-                  prefix={<UserOutlined className="site-form-item-icon" />}
-                  placeholder="Username"
-                  size="large"
-                  autoComplete="off"
-                />
-              </Form.Item>
-              <Form.Item
-                name="password"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please input your Password!",
-                  },
-                ]}
-              >
-                <Input.Password
-                  autoComplete="off"
-                  prefix={<LockOutlined className="site-form-item-icon" />}
-                  type="password"
-                  placeholder="Password"
-                  size="large"
-                  iconRender={(visible) =>
-                    visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
-                  }
-                />
-              </Form.Item>
-              <Form.Item>
-                <ReCAPTCHA
-                  ref={recaptchaRef}
-                  sitekey="6Lfs-zwjAAAAAD7xGa8xIO35h0hIFysb6j9_KUKi"
-                  onChange={onVerify}
-                />
-              </Form.Item>
-              <Form.Item>
-                <Button
-                  type="primary"
-                  htmlType="submit"
-                  className="login-form-button"
-                  size="large"
-                  block
-                  disabled={!isVerify}
+      <Row type="flex" justify="center" align="middle">
+        <div>
+          <Form
+            name="normal_login"
+            className="send-mail-form"
+            onFinish={onLogin}
+            autoComplete="off"
+          >
+            <div>
+              <Spin spinning={loading}>
+                <Form.Item
+                  name="username"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Please input your Username!",
+                    },
+                  ]}
+                  style={{ paddingTop: 40 }}
                 >
-                  Log in
-                </Button>
-              </Form.Item>
-              <Form.Item>
-                <div className="container-forgot-register">
-                  <Link to="/forgotpassword">Forgot password</Link>
-                  <Link to="/signup">Sign Up</Link>
-                </div>
-              </Form.Item>
-              {isLoginFailed && (
-                <Form.Item>
-                  <Alert message={message} type="error" />
+                  <Input
+                    prefix={<UserOutlined className="site-form-item-icon" />}
+                    placeholder="Username"
+                    size="large"
+                    autoComplete="off"
+                  />
                 </Form.Item>
-              )}
-            </Spin>
-          </div>
-        </Form>
-      </div>
+                <Form.Item
+                  name="password"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Please input your Password!",
+                    },
+                  ]}
+                >
+                  <Input.Password
+                    autoComplete="off"
+                    prefix={<LockOutlined className="site-form-item-icon" />}
+                    type="password"
+                    placeholder="Password"
+                    size="large"
+                    iconRender={(visible) =>
+                      visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
+                    }
+                  />
+                </Form.Item>
+                <Form.Item
+                  style={{ transform: "scale(0.85)", transformOrigin: "0 0" }}
+                >
+                  <ReCAPTCHA
+                    ref={recaptchaRef}
+                    sitekey="6Lfs-zwjAAAAAD7xGa8xIO35h0hIFysb6j9_KUKi"
+                    onChange={onVerify}
+                  />
+                </Form.Item>
+                <Form.Item>
+                  <Button
+                    type="primary"
+                    htmlType="submit"
+                    className="login-form-button"
+                    size="large"
+                    block
+                    disabled={!isVerify}
+                  >
+                    Log in
+                  </Button>
+                </Form.Item>
+                <Form.Item>
+                  <div
+                    className="container-forgot-register"
+                    style={{ paddingBottom: 40 }}
+                  >
+                    <Link to="/forgotpassword">Forgot password</Link>
+                  </div>
+                </Form.Item>
+                {isLoginFailed && (
+                  <Form.Item>
+                    <Alert message={message} type="error" />
+                  </Form.Item>
+                )}
+              </Spin>
+            </div>
+          </Form>
+        </div>
+      </Row>
     </div>
   );
 }

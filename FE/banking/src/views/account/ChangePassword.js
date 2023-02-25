@@ -5,9 +5,7 @@ import {
   EyeInvisibleOutlined,
   EyeTwoTone,
 } from "@ant-design/icons";
-import "../../Assets/CSS/Register.css";
 import { instance, parseJwt } from "../../utils";
-import { useEffect } from "react";
 
 function ChangePassword(props) {
   const [loading, setLoading] = useState(false);
