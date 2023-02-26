@@ -30,7 +30,7 @@
 <img src="./FE/banking/src/Assets/Images/Screenshots/Resetpassword.png" width="700">
 <img src="./FE/banking/src/Assets/Images/Screenshots/Home.png" width="700">
 <img src="./FE/banking/src/Assets/Images/Screenshots/DebtManage-1.png" width="700">
-<img src="./FE/banking/src/Assets/Images/Screenshots/DebtManage-2" width="700">
+<img src="./FE/banking/src/Assets/Images/Screenshots/DebtManage-2.png" width="700">
 <img src="./FE/banking/src/Assets/Images/Screenshots/RecipientManage.png" width="700">
 <img src="./FE/banking/src/Assets/Images/Screenshots/transaction.png" width="700">
 <img src="./FE/banking/src/Assets/Images/Screenshots/Transaction-1.png" width="700">
@@ -39,5 +39,5 @@
 <img src="./FE/banking/src/Assets/Images/Screenshots/Employee-Register.png" width="700">
 <img src="./FE/banking/src/Assets/Images/Screenshots/Employee-Recharge.png" width="700">
 <img src="./FE/banking/src/Assets/Images/Screenshots/Employee-Transaction.png" width="700">
-<img src="./FE/banking/src/Assets/Images/Screenshots/Admin-Employee.png" width="700">
+<img src="./FE/banking/src/Assets/Images/Screenshots/Admin-EmployeeManage.png" width="700">
 <img src="./FE/banking/src/Assets/Images/Screenshots/Admin-Transaction.png" width="700">

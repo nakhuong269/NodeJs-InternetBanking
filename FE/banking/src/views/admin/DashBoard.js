@@ -132,7 +132,7 @@ function DashBoard() {
                 const startDate = moment(dateStrings[0], "DD-MM-YYYY");
                 const endDate = moment(dateStrings[1], "DD-MM-YYYY");
 
-                return currentDate.isBetween(startDate.add(-1), endDate.add(1));
+                return currentDate.isBetween(startDate, endDate);
               });
 
               setDataSource(filteredData);

@@ -180,6 +180,7 @@ const Tranfer = ({ nextCurrent }) => {
             <Input
               placeholder="Enter/ Select the recipient"
               allowClear
+              autoComplete="off"
               style={{
                 width: 300,
               }}
@@ -194,7 +195,8 @@ const Tranfer = ({ nextCurrent }) => {
                   title="Choose a recipient"
                   trigger="click"
                   zIndex={10}
-                  placement="rightTop"
+                  placement="right"
+                  showArrow={false}
                 >
                   <UserOutlined />
                 </Popover>

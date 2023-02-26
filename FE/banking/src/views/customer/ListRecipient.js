@@ -324,15 +324,27 @@ const ListRecipient = (props) => {
             )}
             <div
               id="scrollableDiv"
-              style={{
-                minWidth: 350,
-                minHeight: 400,
-                height: 450,
-                overflow: "auto",
-                background: "#F8F8FF",
-                border: "1px solid #e8e8e8",
-                borderRadius: 4,
-              }}
+              style={(() =>
+                props.isSelect === true
+                  ? {
+                      minWidth: 300,
+                      minHeight: 400,
+                      height: 450,
+                      overflow: "auto",
+                      background: "#F8F8FF",
+                      border: "1px solid #e8e8e8",
+                      borderRadius: 4,
+                      zIndex: 1,
+                    }
+                  : {
+                      minWidth: 350,
+                      minHeight: 400,
+                      height: 450,
+                      overflow: "auto",
+                      background: "#F8F8FF",
+                      border: "1px solid #e8e8e8",
+                      borderRadius: 4,
+                    })()}
             >
               <List
                 dataSource={data}

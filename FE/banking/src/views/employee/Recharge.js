@@ -50,6 +50,7 @@ function Recharge() {
   //Submit Form
   const onFinish = async (values) => {
     setLoading(true);
+    console.log(data);
     const res = await instance.post(`employee/recharge`, {
       BankID: 1,
       AccountPaymentSend: data[0].label,

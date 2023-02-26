@@ -22,7 +22,7 @@ router.post("/", validate(addEmployee), async (req, res) => {
   const employee = req.body;
 
   const data = await adminModel.addEmployee(employee);
-  console.log(data);
+
   if (data !== null) {
     res.status(201).json({
       message: "Add a employee successfully!",
