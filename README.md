@@ -1,7 +1,8 @@
 # Internet Banking Website Project
 #### Link: https://node-js-internet-banking.vercel.app
-# Using: Back End : - NodeJS Type Module(ES6+), Express, SocketIO, AJV Validate, Access/ Refresh Token JWT, ORM Knex
-         Font End : - ReactJS , Ant Design
+# Using: 
+         ## Back End :  NodeJS Type Module(ES6+), Express, SocketIO, AJV Validate, Access/ Refresh Token JWT, ORM Knex
+         ## Font End :  ReactJS , Ant Design
 
 1. Users
 - Forget password (Email verification)
