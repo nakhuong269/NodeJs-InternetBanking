@@ -4,8 +4,11 @@ import registerSchema from "../schemas/register.json" assert { type: "json" };
 import loginSchema from "../schemas/login.json" assert { type: "json" };
 import refreshTokenSchema from "../schemas/refreshToken.json" assert { type: "json" };
 import changePasswordSchema from "../schemas/changePassword.json" assert { type: "json" };
+import forgotPasswordSchema from "../schemas/forgotPassword.json" assert { type: "json" };
+import verifyOTPResetPasswordSchema from "../schemas/verifyResetPassword.json" assert { type: "json" };
 import * as accountModel from "../models/account.model.js";
 import validate from "../middlewares/validate.mdw.js";
+import verifyToken from "../middlewares/verifyToken.mdw.js";
 
 const router = express.Router();
 
@@ -76,27 +79,32 @@ router.post("/refresh", validate(refreshTokenSchema), async (req, res) => {
   }
 });
 
-router.post("/forgotPassword", async (req, res) => {
-  const email = req.body.email;
+router.post(
+  "/forgotPassword",
+  validate(forgotPasswordSchema),
+  async (req, res) => {
+    const email = req.body.Email;
 
-  const result = await accountModel.forgotPassword(email);
+    const result = await accountModel.forgotPassword(email);
 
-  if (result === null || result === false) {
+    if (result === null || result === false) {
+      return res.status(200).json({
+        message: "Forgot password failed",
+        success: false,
+      });
+    }
+
     return res.status(200).json({
-      message: "Forgot password failed",
-      success: false,
+      data: result,
+      success: true,
+      message: "Forgot password succesfully",
     });
   }
-
-  return res.status(200).json({
-    data: result,
-    success: true,
-    message: "Forgot password succesfully",
-  });
-});
+);
 
 router.patch(
   "/changePassword",
+  verifyToken,
   validate(changePasswordSchema),
   async (req, res) => {
     const passwordInfo = req.body;
@@ -121,25 +129,29 @@ router.patch(
   }
 );
 
-router.post("/VerifyResetPassword", async (req, res) => {
-  const otpInfo = req.body;
+router.post(
+  "/VerifyResetPassword",
+  validate(verifyOTPResetPasswordSchema),
+  async (req, res) => {
+    const otpInfo = req.body;
 
-  const result = await accountModel.checkOTPForgotPass(
-    otpInfo.AccountID,
-    otpInfo.OTP
-  );
+    const result = await accountModel.checkOTPForgotPass(
+      otpInfo.AccountID,
+      otpInfo.OTP
+    );
 
-  if (result === null || result === false) {
+    if (result === null || result === false) {
+      return res.status(200).json({
+        message: "Verify reset password failed",
+        success: false,
+      });
+    }
+
     return res.status(200).json({
-      message: "Verify reset password failed",
-      success: false,
+      success: true,
+      message: "Verify reset password succesfully",
     });
   }
-
-  return res.status(200).json({
-    success: true,
-    message: "Verify reset password succesfully",
-  });
-});
+);
 
 export default router;

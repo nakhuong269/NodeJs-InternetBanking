@@ -52,6 +52,7 @@ instance.interceptors.response.use(
           return instance(originalRequest);
         } catch (error) {
           // handle refresh token error
+          window.location.href = "/login";
         }
       }
     }
