@@ -44,7 +44,7 @@ export async function register(userInfo) {
     .toUpperCase();
 
   //hash password
-  const accountInfo = {
+  let accountInfo = {
     Username: userInfo.Phone,
     Password: bcrypt.hashSync(password, 10),
     Role: userInfo.Role,
@@ -53,14 +53,21 @@ export async function register(userInfo) {
   const trx = await db.transaction();
   try {
     //create user for user and get id user insert
-    const accountId =
-      (await trx("user").insert(user)) &&
-      (await trx("account").insert(accountInfo));
+    const accountId = (await trx("user").insert(user, ["ID"]))[0];
+
+    // console.log(accountId);
+
+    accountInfo = {
+      ...accountInfo,
+      ID: accountId,
+    };
+
+    await trx("account").insert(accountInfo);
 
     //create account payment for account
     const accountPaymentInfo = {
       AccountNumber: userInfo.Phone,
-      AccountID: accountId[0],
+      AccountID: accountId,
     };
     const accountPaymentId = await trx("account_payment").insert(
       accountPaymentInfo
