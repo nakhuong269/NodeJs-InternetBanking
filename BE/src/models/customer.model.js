@@ -1,11 +1,7 @@
 import db from "../utils/db.js";
 import moment from "moment";
 import { InternalTransfer } from "./generic.model.js";
-import {
-  createDebtSocket,
-  cancelDebtSocket,
-  paymentDebtSocket,
-} from "./socket.model.js";
+import { createDebtSocket, cancelDebtSocket } from "./socket.model.js";
 
 export async function findAllRecipientByAccountId(accountId) {
   const rows = await db("recipient")
@@ -234,13 +230,7 @@ export async function debtPayment(id) {
 
     const resultDebtPayment = await InternalTransfer(debtPayment);
 
-    await trx("debt_remind")
-      .where("ID", "=", id)
-      .update({ UpdatedDate: db.fn.now() });
-
     await trx.commit();
-
-    await paymentDebtSocket(id);
 
     return resultDebtPayment;
   } catch (error) {

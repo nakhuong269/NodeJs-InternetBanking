@@ -32,7 +32,7 @@ function ForgotPassword(props) {
       setLoading(true);
       // Push data to api
       const res = await instance.post("Account/ForgotPassword", {
-        email: values.email,
+        Email: values.email,
       });
 
       //Send mail successfully

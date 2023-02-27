@@ -62,29 +62,6 @@ export async function createDebtSocket(idDebt) {
   }
 }
 
-export async function paymentDebtSocket(idDebt) {
-  const idUserSend = await db("debt_remind")
-    .where("debt_remind.ID", idDebt)
-    .join(
-      "account_payment",
-      "account_payment.AccountNumber",
-      "=",
-      "debt_remind.AccountPaymentSend"
-    )
-    .select(["account_payment.AccountID"]);
-
-  if (idUserSend.length === 0) {
-    return null;
-  }
-
-  console.log(idUserSend[0].AccountID);
-  console.log(users[idUserSend[0].AccountID]);
-
-  return await io
-    .to(users[idUserSend[0].AccountID])
-    .emit("server_payment_debt", idDebt);
-}
-
 export async function transactionSocket(idTrans) {
   const idUserReceive = await db("transaction")
     .where("transaction.ID", idTrans)
