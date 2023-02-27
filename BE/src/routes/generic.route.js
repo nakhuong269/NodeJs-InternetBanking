@@ -126,4 +126,22 @@ router.get("/Transaction/:transactionID", async (req, res) => {
   });
 });
 
+router.get("/GetListAccountPayment/:id", async (req, res) => {
+  const id = req.params.id || 0;
+
+  const data = await genericModel.findAllPaymentAccountById(id);
+
+  if (data === null) {
+    return res.status(200).json({
+      message: "Get list account payment failed",
+      success: false,
+    });
+  }
+  return res.status(200).json({
+    data: data,
+    success: true,
+    message: "Get list account payment successfully",
+  });
+});
+
 export default router;

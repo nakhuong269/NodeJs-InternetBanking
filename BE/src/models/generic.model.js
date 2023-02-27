@@ -219,3 +219,16 @@ export async function checkOTPForgotPass(accountID, OTPinfo) {
     throw error;
   }
 }
+
+export async function findAllPaymentAccountById(id) {
+  const rows = await db("account_payment")
+    .where("IsDeleted", false)
+    .andWhere("AccountID", id)
+    .select(["ID", "AccountNumber", "Balance"]);
+
+  if (rows.length === 0) {
+    return null;
+  }
+
+  return rows;
+}

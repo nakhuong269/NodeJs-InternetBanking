@@ -21,7 +21,7 @@ function Recharge() {
   const [form] = Form.useForm();
 
   const appendData = async () => {
-    const res = await instance.get(`Customer/GetListAccountPayment/${userId}`);
+    const res = await instance.get(`generic/GetListAccountPayment/${userId}`);
     if (res.data.success === true) {
       setData(
         res.data.data.map((record, index) => ({
